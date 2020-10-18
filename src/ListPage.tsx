@@ -1,13 +1,7 @@
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
-import { selectItems, toggleItem } from "./reducers/shoppinglist";
+import { useSelector } from "react-redux";
+import { selectItems } from "./reducers/shoppingLists";
 import ListItem from "./ListItem";
 import FlipMove from "react-flip-move";
 import _ from "lodash";
@@ -90,7 +84,9 @@ function getOrder() {}
 
 function useOrder() {
   const previousItemRef = useRef<Relatables>(Place.Start);
-  const [items, setItems] = useState(Object.values(useSelector(selectItems)));
+  const [items, setItems] = useState(
+    Object.values(useSelector(selectItems("asd")))
+  );
 
   const doSort = useCallback(
     (item: Relatables) => {
@@ -129,7 +125,7 @@ function useOrder() {
 
 export const ListPage = () => {
   const { items, onCheck } = useOrder();
-  const oItems = Object.values(useSelector(selectItems));
+  const oItems = Object.values(useSelector(selectItems("asd")));
 
   return (
     <main>
