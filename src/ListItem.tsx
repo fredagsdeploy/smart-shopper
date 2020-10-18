@@ -1,69 +1,45 @@
 import React, { forwardRef, useState } from "react";
 import "./App.css";
 import styled from "styled-components";
-import {
-  Item,
-  selectItem,
-  toggleItem,
-  updateItem,
-} from "./reducers/shoppingLists";
-import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "lodash";
-import { useParams } from "react-router-dom";
 
 interface Props {
-  itemId: string;
-  onClick: (item: Item) => void;
+  name: string;
+  checked: boolean;
+  onChange: () => void;
+  onNameChange: (name: string) => void;
 }
 
-export const ListItem = forwardRef<any, Props>(({ itemId, onClick }, ref) => {
-  let { shoppingListId } = useParams();
+export const ListItem = forwardRef<any, Props>(
+  ({ name, checked, onChange, onNameChange }, ref) => {
+    const [_name, setName] = useState(name);
 
-  const dispatch = useDispatch();
-  const item = useSelector(selectItem(shoppingListId, itemId));
-  const [name, setName] = useState(item.name);
+    const debouncedUpdate = debounce(onNameChange, 500);
 
-  const dispatchUpdate = () =>
-    dispatch(
-      updateItem({
-        shoppingListId: shoppingListId,
-        itemId: item.id,
-        item: {
-          name: name,
-        },
-      })
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setName(event.target.value);
+      debouncedUpdate(event.target.value);
+    };
+
+    return (
+      <Container ref={ref}>
+        <Checkbox
+          type="checkbox"
+          checked={checked}
+          onChange={onChange}
+          aria-label={_name}
+        />
+        <Text
+          type="text"
+          value={_name}
+          onChange={handleChange}
+          checked={checked}
+          aria-label="Item"
+        />
+      </Container>
     );
-
-  const debouncedUpdate = debounce(dispatchUpdate, 500);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
-    debouncedUpdate();
-  };
-
-  return (
-    <Container ref={ref}>
-      <Checkbox
-        type="checkbox"
-        checked={item.checked}
-        onChange={() => {
-          dispatch(
-            toggleItem({ shoppingListId: shoppingListId, itemId: item.id })
-          );
-          onClick(item);
-        }}
-        aria-label={name}
-      />
-      <Text
-        type="text"
-        value={name}
-        onChange={handleChange}
-        checked={item.checked}
-        aria-label="Item"
-      />
-    </Container>
-  );
-});
+  }
+);
 
 export default ListItem;
 
@@ -89,7 +65,7 @@ const Text = styled.input`
   flex: 1;
   background-color: transparent;
   font-size: 1rem;
-  ${props => props.checked ? 'text-decoration: line-through' : ''};
+  ${(props) => (props.checked ? "text-decoration: line-through" : "")};
 
   &:focus {
     outline: none;

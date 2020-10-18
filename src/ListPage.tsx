@@ -1,7 +1,12 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
-import { selectItems } from "./reducers/shoppingLists";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectItems,
+  ShoppingListItems,
+  toggleItem,
+  updateItem,
+} from "./reducers/shoppingLists";
 import ListItem from "./ListItem";
 import FlipMove from "react-flip-move";
 import _ from "lodash";
@@ -25,41 +30,41 @@ enum Place {
 
 type Relatables = ShoppingItem | Place;
 
-interface Obj {
-  other: ShoppingItem;
+interface Relatable {
+  item: ShoppingItem;
   score: number;
 }
 
-const dataStore: Partial<Record<Relatables, Obj[]>> = {
+const dataStore: Partial<Record<Relatables, Relatable[]>> = {
   [Place.Start]: [
     {
-      other: "Bananer",
+      item: "Bananer",
       score: 10,
     },
     {
-      other: "Kyckling",
+      item: "Kyckling",
       score: 1,
     },
   ],
   Bananer: [
     {
-      other: "Äpplen",
+      item: "Äpplen",
       score: 1,
     },
   ],
   Äpplen: [
     {
-      other: "Bananer",
+      item: "Bananer",
       score: 1,
     },
   ],
   Mjölk: [
     {
-      other: "Bananer",
+      item: "Bananer",
       score: 1,
     },
     {
-      other: "Mjöl",
+      item: "Mjöl",
       score: 4,
     },
   ],
@@ -70,92 +75,136 @@ function onItemCheck(item: ShoppingItem, previous: Relatables) {
     dataStore[previous] = [];
   }
 
-  const candidate = dataStore[previous]!.find((o) => o.other === item);
+  const candidate = dataStore[previous]!.find(
+    (relatable) => relatable.item === item
+  );
 
   if (candidate) {
     candidate.score = candidate.score + 1;
   } else {
-    dataStore[previous]?.push({ other: item, score: 1 });
+    dataStore[previous]?.push({ item: item, score: 1 });
   }
-
-  console.log(dataStore);
 
   return dataStore;
 }
 
-function getOrder() {}
-
-function useOrder() {
+function useOrder(shoppingCardItems: ShoppingListItems) {
   const previousItemRef = useRef<Relatables>(Place.Start);
-  const [items, setItems] = useState(
-    Object.values(useSelector(selectItems("asd")))
-  );
+  const shoppingCartItemsValues = Object.values(shoppingCardItems);
 
-  const doSort = useCallback(
-    (item: Relatables) => {
-      const [overst, underst] = _.partition(items, (i) =>
-        dataStore[item]?.some((b) => b.other === i.name)
-      );
-
-      const newOverst = _.orderBy(overst, (i) => {
-        return -(dataStore[item]?.find((b) => b.other === i.name)?.score ?? 0);
-      });
-
-      setItems([...newOverst, ...underst]);
-    },
-    [items]
-  );
-
-  const onCheck = useCallback(
-    (item: ShoppingItem) => {
-      onItemCheck(item, previousItemRef.current);
-      previousItemRef.current = item;
-
-      doSort(item);
-    },
-    [doSort]
-  );
-
-  useEffect(() => {
-    doSort(previousItemRef.current);
+  const setCurrentItem = useCallback((item: ShoppingItem) => {
+    onItemCheck(item, previousItemRef.current);
+    previousItemRef.current = item;
   }, []);
 
+  const [checkedItems, uncheckedItems] = useMemo(() => {
+    const item = previousItemRef.current;
+
+    let dataStoreElement = dataStore[item];
+    const [relatedItems, unrelatedItems] = _.partition(
+      shoppingCartItemsValues,
+      (i) => {
+        if (dataStoreElement) {
+          return dataStoreElement.some(
+            (relatable) => relatable.item === i.name
+          );
+        }
+
+        return false;
+      }
+    );
+
+    const orderedRelatedItems = _.orderBy(
+      relatedItems,
+      (i) => {
+        return dataStoreElement?.find((relatable) => relatable.item === i.name)
+          ?.score;
+      },
+      ["desc"]
+    );
+
+    return _.partition(
+      [...orderedRelatedItems, ...unrelatedItems],
+      (item) => item.checked
+    );
+  }, [shoppingCartItemsValues]);
+
   return {
-    items,
-    onCheck,
+    checkedItems,
+    uncheckedItems,
+    setCurrentItem,
   };
 }
 
-export const ListPage = () => {
-  let { shoppingListId } = useParams();
-  const { items, onCheck } = useOrder();
-  const _oItems = useSelector(selectItems(shoppingListId));
+const SHOPPING_LIST_ID = "asd";
 
-  if (_oItems === undefined) {
+export const ListPage = () => {
+  const dispatch = useDispatch();
+  let { shoppingListId } = useParams();
+  const { checkedItems, uncheckedItems, setCurrentItem } = useOrder(
+    useSelector(selectItems(SHOPPING_LIST_ID))
+  );
+
+  if (checkedItems === undefined) {
     return <div>No such shopping list</div>;
   }
 
-  const oItems = Object.values(_oItems);
   return (
     <main>
       <Header>Smart Shopper {shoppingListId}</Header>
       <FlipMove>
-        {items
-          .filter((i) => !oItems.find((b) => i.id === b.id)!.checked)
-          .map((i) => (
-            <ListItem
-              key={i.id}
-              itemId={i.id}
-              onClick={() => onCheck(i.name)}
-            />
-          ))}
+        {uncheckedItems.map((item) => (
+          <ListItem
+            key={item.id}
+            checked={false}
+            onChange={() => {
+              dispatch(
+                toggleItem({
+                  shoppingListId: SHOPPING_LIST_ID,
+                  itemId: item.id,
+                })
+              );
+              setCurrentItem(item.name);
+            }}
+            name={item.name}
+            onNameChange={(name: string) => {
+              dispatch(
+                updateItem({
+                  shoppingListId: shoppingListId,
+                  itemId: item.id,
+                  item: {
+                    name,
+                  },
+                })
+              );
+            }}
+          />
+        ))}
       </FlipMove>
       <hr />
-      {items
-        .filter((i) => oItems.find((b) => i.id === b.id)!.checked)
-        .map((i) => (
-          <ListItem key={i.id} itemId={i.id} onClick={_.noop} />
-        ))}
+      {checkedItems.map((item) => (
+        <ListItem
+          key={item.id}
+          checked={true}
+          onChange={() => {
+            dispatch(
+              toggleItem({ shoppingListId: SHOPPING_LIST_ID, itemId: item.id })
+            );
+          }}
+          name={item.name}
+          onNameChange={(name: string) => {
+            dispatch(
+              updateItem({
+                shoppingListId: shoppingListId,
+                itemId: item.id,
+                item: {
+                  name,
+                },
+              })
+            );
+          }}
+        />
+      ))}
     </main>
   );
 };
