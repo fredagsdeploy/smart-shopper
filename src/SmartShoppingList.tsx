@@ -1,21 +1,33 @@
 import { useDispatch, useSelector } from "react-redux";
-import { selectItems, toggleItem, updateItem } from "./reducers/shoppingLists";
+import {
+  addItem,
+  selectItems,
+  toggleItem,
+  updateItem,
+} from "./reducers/shoppingLists";
 import FlipMove from "react-flip-move";
 import ListItem from "./ListItem";
 import _ from "lodash";
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useOrder } from "./customHooks/useOrder";
+import Fuse from "fuse.js";
+import { v4 as uuid } from "uuid";
+
+const dataStoreSvenska = require("./dataStoreSvenska.json");
+const svenskaOrdKeys = Object.keys(dataStoreSvenska);
 
 interface Props {
-  id: string;
+  shoppingListId: string;
 }
 
-export const SmartShoppingList: React.FC<Props> = ({ id }) => {
+export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
   const dispatch = useDispatch();
   const { checkedItems, uncheckedItems, setCurrentItem } = useOrder(
-    useSelector(selectItems(id))
+    useSelector(selectItems(shoppingListId))
   );
+
+  const [newItemName, setNewItemName] = useState("");
 
   if (checkedItems === undefined) {
     return <div>No such shopping list</div>;
@@ -23,7 +35,12 @@ export const SmartShoppingList: React.FC<Props> = ({ id }) => {
 
   return (
     <div>
-      <Header>{id}</Header>
+      <datalist id="item_suggestion">
+        {svenskaOrdKeys.map((ord) => {
+          return <option value={ord} />;
+        })}
+      </datalist>
+      <Header>{shoppingListId}</Header>
       <FlipMove>
         {uncheckedItems.map((item) => (
           <ListItem
@@ -32,7 +49,7 @@ export const SmartShoppingList: React.FC<Props> = ({ id }) => {
             onChange={() => {
               dispatch(
                 toggleItem({
-                  shoppingListId: id,
+                  shoppingListId: shoppingListId,
                   itemId: item.id,
                 })
               );
@@ -42,7 +59,7 @@ export const SmartShoppingList: React.FC<Props> = ({ id }) => {
             onNameChange={(name: string) => {
               dispatch(
                 updateItem({
-                  shoppingListId: id,
+                  shoppingListId: shoppingListId,
                   itemId: item.id,
                   item: {
                     name,
@@ -53,19 +70,22 @@ export const SmartShoppingList: React.FC<Props> = ({ id }) => {
           />
         ))}
       </FlipMove>
-      <hr />
+      <br />
+      <br />
       {checkedItems.map((item) => (
         <ListItem
           key={item.id}
           checked={true}
           onChange={() => {
-            dispatch(toggleItem({ shoppingListId: id, itemId: item.id }));
+            dispatch(
+              toggleItem({ shoppingListId: shoppingListId, itemId: item.id })
+            );
           }}
           name={item.name}
           onNameChange={(name: string) => {
             dispatch(
               updateItem({
-                shoppingListId: id,
+                shoppingListId: shoppingListId,
                 itemId: item.id,
                 item: {
                   name,
@@ -75,6 +95,30 @@ export const SmartShoppingList: React.FC<Props> = ({ id }) => {
           }}
         />
       ))}
+      <div>
+        <input
+          list="item_suggestion"
+          type="text"
+          value={newItemName}
+          onChange={(e) => setNewItemName(e.target.value)}
+        />
+        <button
+          onClick={() => {
+            const newItemId = uuid();
+            dispatch(
+              addItem({
+                shoppingListId: shoppingListId,
+                itemId: newItemId,
+                item: { name: newItemName, id: newItemId, checked: false },
+              })
+            );
+            setNewItemName("");
+          }}
+        >
+          Add
+        </button>
+      </div>
+      <hr />
     </div>
   );
 };

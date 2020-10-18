@@ -5,5 +5,5 @@ import { SmartShoppingList } from "./SmartShoppingList";
 export const ListPage = () => {
   let { shoppingListId } = useParams<{ shoppingListId: string }>();
 
-  return <SmartShoppingList id={shoppingListId} />;
+  return <SmartShoppingList shoppingListId={shoppingListId} />;
 };

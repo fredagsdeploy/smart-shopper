@@ -9,7 +9,7 @@ export const ShoppingListsPage = () => {
   return (
     <>
       {Object.keys(shoppingLists).map((shoppingListId) => (
-        <SmartShoppingList id={shoppingListId} />
+        <SmartShoppingList shoppingListId={shoppingListId} />
       ))}
     </>
   );
