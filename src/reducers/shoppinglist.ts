@@ -1,10 +1,11 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import { RootState } from "./rootReducer";
+import { ShoppingItem } from "../ListPage";
 
-export type ItemId = string;
-export interface Item {
-  id: ItemId;
-  name: string;
+type ItemId = string;
+interface Item {
+  id: string;
+  name: ShoppingItem;
   checked: boolean;
 }
 
@@ -12,32 +13,32 @@ const initialState: Record<ItemId, Item> = {
   "1": {
     id: "1",
     checked: false,
-    name: "Bananer",
+    name: ShoppingItem.Bananer,
   },
   "2": {
     id: "2",
     checked: false,
-    name: "Äpplen",
+    name: ShoppingItem.Äpplen,
   },
   "3": {
     id: "3",
     checked: false,
-    name: "Mjölk",
+    name: ShoppingItem.Mjölk,
   },
   "4": {
     id: "4",
     checked: false,
-    name: "Mjöl",
+    name: ShoppingItem.Mjöl,
   },
   "5": {
     id: "5",
     checked: false,
-    name: "Kyckling",
+    name: ShoppingItem.Kyckling,
   },
   "6": {
     id: "6",
     checked: false,
-    name: "Ägg",
+    name: ShoppingItem.Ägg,
   },
 };
 
