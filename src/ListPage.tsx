@@ -127,7 +127,7 @@ function useOrder() {
 }
 
 export const ListPage = () => {
-  let { shoppingListId } = useParams();
+  let { shoppingListId } = useParams<{shoppingListId: string}>();
   const { items, onCheck } = useOrder();
   const _oItems = useSelector(selectItems(shoppingListId));
 

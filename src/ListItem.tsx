@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const ListItem = forwardRef<any, Props>(({ itemId, onClick }, ref) => {
-  let { shoppingListId } = useParams();
+  let { shoppingListId } = useParams<{shoppingListId: string}>();
 
   const dispatch = useDispatch();
   const item = useSelector(selectItem(shoppingListId, itemId));
