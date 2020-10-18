@@ -1,7 +1,8 @@
 import React from "react";
+import { PersistGate } from "redux-persist/integration/react";
 import "./App.css";
 import { Provider } from "react-redux";
-import { store } from "./reducers/store";
+import { store, persistor } from "./reducers/store";
 import {
   BrowserRouter as Router,
   Switch,
@@ -15,12 +16,13 @@ import { Nav, NavItemProps } from "./components/Nav";
 
 function App() {
   const navItems: NavItemProps[] = [
-    {to: "/shoppingLists", title: "Shopping Lists"},
-    {to: "/login", title: "Sign in", alignRight: true},
+    { to: "/shoppingLists", title: "Shopping Lists" },
+    { to: "/login", title: "Sign in", alignRight: true },
   ];
 
   return (
     <Provider store={store}>
+      <PersistGate loading={<div>Loading</div>} persistor={persistor}>
         <Router>
           <Nav navItems={navItems} />
           <main>
@@ -47,6 +49,7 @@ function App() {
             </Switch>
           </main>
         </Router>
+      </PersistGate>
     </Provider>
   );
 }

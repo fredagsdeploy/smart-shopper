@@ -1,5 +1,6 @@
 import rootReducer from "./rootReducer";
-/*
+import storage from "redux-persist/lib/storage";
+
 import {
   persistReducer,
   persistStore,
@@ -10,23 +11,22 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-*/
+
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 
-// const persistConfig = {
-//   key: "root",
-//   storage: AsyncStorage,
-//   transforms: [JsonLiteralTransformer],
-// };
+const persistConfig = {
+  key: "root",
+  storage,
+};
 
-//const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: rootReducer,
+  reducer: persistedReducer,
   middleware: getDefaultMiddleware({
     immutableCheck: false,
     serializableCheck: false,
   }),
 });
 
-//export const persistor = persistStore(store);
+export const persistor = persistStore(store);
