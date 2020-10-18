@@ -49,7 +49,14 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
           list="item_suggestion"
           type="text"
           value={newItemName}
-          onChange={(e) => setNewItemName(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.charCode === 13) {
+              addNewItem();
+            }
+          }}
+          onChange={(e) => {
+            setNewItemName(e.target.value);
+          }}
           aria-label="New item"
           placeholder="New item"
           style={{ marginRight: "0.5rem", minWidth: "auto", flex: 1 }}
