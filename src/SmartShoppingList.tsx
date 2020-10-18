@@ -114,10 +114,6 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
   );
 };
 
-const Header = styled.h2`
-  margin: 1.5rem 1rem;
-`;
-
 const ShoppingList = styled.section`
   padding-top: 1.5rem;
   background-color: white;
