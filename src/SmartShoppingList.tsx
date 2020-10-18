@@ -44,7 +44,6 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
 
   return (
     <ShoppingList>
-      <Header>{shoppingListId}</Header>
       <NewItemRow>
         <Input
           list="item_suggestion"
@@ -53,11 +52,9 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
           onChange={(e) => setNewItemName(e.target.value)}
           aria-label="New item"
           placeholder="New item"
-          style={{marginRight: "0.5rem", minWidth: "auto", flex: 1}}
+          style={{ marginRight: "0.5rem", minWidth: "auto", flex: 1 }}
         />
-        <Button onClick={addNewItem}>
-          Add
-        </Button>
+        <Button onClick={addNewItem}>Add</Button>
       </NewItemRow>
       <FlipMove>
         {uncheckedItems.map((item) => (
@@ -122,10 +119,11 @@ const Header = styled.h2`
 `;
 
 const ShoppingList = styled.section`
+  padding-top: 1.5rem;
   background-color: white;
   width: 100%;
   max-width: 800px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   margin-bottom: 1rem;
 `;
 
