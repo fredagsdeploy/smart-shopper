@@ -138,7 +138,7 @@ export const ListPage = () => {
   const oItems = Object.values(_oItems);
   return (
     <main>
-      <Header>Smart Shopper {shoppingListId}</Header>
+      <Header>{shoppingListId}</Header>
       <FlipMove>
         {items
           .filter((i) => !oItems.find((b) => i.id === b.id)!.checked)
