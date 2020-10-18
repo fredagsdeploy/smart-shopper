@@ -47,14 +47,7 @@ export const ListPage = () => {
       </div>
       <FlipMove>
         {_items.map((i) => (
-          <ListItem
-            key={i.id}
-            itemName={i.name}
-            checked={i.checked}
-            onPress={() => {
-              dispatch(toggleItem(i.id));
-            }}
-          />
+          <ListItem key={i.id} itemId={i.id} />
         ))}
       </FlipMove>
     </main>

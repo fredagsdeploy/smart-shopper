@@ -1,8 +1,8 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import { RootState } from "./rootReducer";
 
-type ItemId = string;
-interface Item {
+export type ItemId = string;
+export interface Item {
   id: ItemId;
   name: string;
   checked: boolean;
@@ -61,3 +61,5 @@ export const shoppingList = createReducer(initialState, (builder) => {
 });
 
 export const selectItems = (state: RootState) => state.shoppingList;
+export const selectItem = (itemId: string) => (state: RootState) =>
+  state.shoppingList[itemId];
