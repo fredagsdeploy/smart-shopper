@@ -1,6 +1,11 @@
-import { createAction, createReducer } from "@reduxjs/toolkit";
+import {
+  createAction,
+  createReducer,
+  createAsyncThunk,
+} from "@reduxjs/toolkit";
 import { RootState } from "./rootReducer";
 import { ShoppingItem } from "../customHooks/useOrder";
+import { postCheckUncheckEvent } from "../backend";
 
 export type ShoppingLists = Record<string, ShoppingList>;
 export type ShoppingListItems = Record<ItemId, Item>;
@@ -135,10 +140,34 @@ export const removeItem = createAction<{
   itemId: ItemId;
 }>("shoppinglist/item/remove");
 
-export const toggleItem = createAction<{
-  shoppingListId: string;
-  itemId: ItemId;
-}>("shoppinglist/item/toggle");
+export const toggleItem = createAsyncThunk<
+  {
+    shoppingListId: string;
+    itemId: ItemId;
+  },
+  {
+    shoppingListId: string;
+    itemId: ItemId;
+  }
+>(
+  "shoppinglist/item/toggle",
+  async ({ shoppingListId, itemId }, { getState }) => {
+    const state = getState() as RootState;
+    const item = selectItem(shoppingListId, itemId)(state);
+
+    await postCheckUncheckEvent({
+      shoppingListId,
+      itemId,
+      checked: item.checked,
+      name: item.name,
+    });
+    return { shoppingListId, itemId };
+  }
+);
+// export const toggleItem = createAction<{
+//   shoppingListId: string;
+//   itemId: ItemId;
+// }>("shoppinglist/item/toggle");
 
 export const updateItem = createAction<{
   shoppingListId: string;
@@ -163,7 +192,7 @@ export const shoppingLists = createReducer(initialState, (builder) => {
     const { shoppingListId, itemId } = action.payload;
     delete state[shoppingListId].items[itemId];
   });
-  builder.addCase(toggleItem, (state, action) => {
+  builder.addCase(toggleItem.fulfilled, (state, action) => {
     const { shoppingListId, itemId } = action.payload;
     const prevItem = state[shoppingListId].items[itemId];
     prevItem.checked = !prevItem.checked;
