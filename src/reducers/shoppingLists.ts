@@ -24,17 +24,17 @@ const initialState: ShoppingLists = {
       "1": {
         id: "1",
         checked: false,
-        name: "Bananer",
+        name: "Grönkål",
       },
       "2": {
         id: "2",
         checked: false,
-        name: "Äpplen",
+        name: "Äpple",
       },
       "3": {
         id: "3",
         checked: false,
-        name: "Mjölk",
+        name: "Sötpotatis",
       },
       "4": {
         id: "4",
@@ -44,12 +44,77 @@ const initialState: ShoppingLists = {
       "5": {
         id: "5",
         checked: false,
-        name: "Kyckling",
+        name: "Kycklingkött",
       },
       "6": {
         id: "6",
         checked: false,
-        name: "Ägg",
+        name: "Fläskkött",
+      },
+      "7": {
+        id: "7",
+        checked: false,
+        name: "Grodlår",
+      },
+      "8": {
+        id: "8",
+        checked: false,
+        name: "Lök",
+      },
+      "9": {
+        id: "9",
+        checked: false,
+        name: "Smör",
+      },
+      "10": {
+        id: "10",
+        checked: false,
+        name: "Yoghurt",
+      },
+      "11": {
+        id: "11",
+        checked: false,
+        name: "Crème fraîche",
+      },
+      "12": {
+        id: "12",
+        checked: false,
+        name: "Kvarg",
+      },
+      "13": {
+        id: "13",
+        checked: false,
+        name: "Råris",
+      },
+      "14": {
+        id: "14",
+        checked: false,
+        name: "Jasminris",
+      },
+      "15": {
+        id: "15",
+        checked: false,
+        name: "Arborioris",
+      },
+      "16": {
+        id: "16",
+        checked: false,
+        name: "Raklödder",
+      },
+      "17": {
+        id: "17",
+        checked: false,
+        name: "Raktvål",
+      },
+      "18": {
+        id: "18",
+        checked: false,
+        name: "Apelsin",
+      },
+      "19": {
+        id: "19",
+        checked: false,
+        name: "Tomat",
       },
     },
   },

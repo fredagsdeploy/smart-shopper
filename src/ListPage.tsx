@@ -14,15 +14,6 @@ import { useParams } from "react-router-dom";
 
 export type ShoppingItem = string;
 
-//export enum ShoppingItem {
-//  "Bananer" = "Bananer",
-//  "Äpplen" = "Äpplen",
-//  "Mjölk" = "Mjölk",
-//  "Mjöl" = "Mjöl",
-//  "Kyckling" = "Kyckling",
-//  "Ägg" = "Ägg",
-//}
-
 enum Place {
   Start,
   End,
@@ -35,40 +26,18 @@ interface Relatable {
   score: number;
 }
 
-const dataStore: Partial<Record<Relatables, Relatable[]>> = {
-  [Place.Start]: [
-    {
-      item: "Bananer",
-      score: 10,
-    },
-    {
-      item: "Kyckling",
-      score: 1,
-    },
-  ],
-  Bananer: [
-    {
-      item: "Äpplen",
-      score: 1,
-    },
-  ],
-  Äpplen: [
-    {
-      item: "Bananer",
-      score: 1,
-    },
-  ],
-  Mjölk: [
-    {
-      item: "Bananer",
-      score: 1,
-    },
-    {
-      item: "Mjöl",
-      score: 4,
-    },
-  ],
-};
+const dataStore: Partial<Record<Relatables, Relatable[]>>  = require("./dataStoreSvenska.json")
+dataStore[Place.Start] = [
+  {
+    item: "Fläskkött",
+    score: 1,
+  },
+  {
+    item: "Äpple",
+    score: 10,
+  },
+];
+
 
 function onItemCheck(item: ShoppingItem, previous: Relatables) {
   if (!dataStore[previous]) {
