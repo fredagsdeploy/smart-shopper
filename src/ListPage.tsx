@@ -1,4 +1,10 @@
-import React, {forwardRef, useCallback, useRef, useState} from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { selectItems, toggleItem } from "./reducers/shoppinglist";
@@ -7,12 +13,12 @@ import FlipMove from "react-flip-move";
 import _ from "lodash";
 
 export enum ShoppingItem {
-  "Bananer",
-  "Äpplen",
-  "Mjölk",
-  "Mjöl",
-  "Kyckling",
-  "Ägg",
+  "Bananer" = "Bananer",
+  "Äpplen" = "Äpplen",
+  "Mjölk" = "Mjölk",
+  "Mjöl" = "Mjöl",
+  "Kyckling" = "Kyckling",
+  "Ägg" = "Ägg",
 }
 
 enum Place {
@@ -75,24 +81,44 @@ function onItemCheck(item: ShoppingItem, previous: Relatables) {
     dataStore[previous]?.push({ other: item, score: 1 });
   }
 
+  console.log(dataStore);
+
   return dataStore;
 }
 
 function getOrder() {}
 
 function useOrder() {
-  const items = useSelector(selectItems);
   const previousItemRef = useRef<Relatables>(Place.Start);
+  const [items, setItems] = useState(Object.values(useSelector(selectItems)));
 
-  const onCheck = useCallback((item: ShoppingItem) => {
-    onItemCheck(item, previousItemRef.current);
-    previousItemRef.current = item;
-    const overst = Object.values(items).filter((i) =>
-      dataStore[item]?.some((b) => b.other === i.name)
-    );
-    const nederst = Object.values(items).filter((i) =>
-      dataStore[item]?.some((b) => b.other === i.name)
-    );
+  const doSort = useCallback(
+    (item: Relatables) => {
+      const [overst, underst] = _.partition(items, (i) =>
+        dataStore[item]?.some((b) => b.other === i.name)
+      );
+
+      const newOverst = _.orderBy(overst, (i) => {
+        return -(dataStore[item]?.find((b) => b.other === i.name)?.score ?? 0);
+      });
+
+      setItems([...newOverst, ...underst]);
+    },
+    [items]
+  );
+
+  const onCheck = useCallback(
+    (item: ShoppingItem) => {
+      onItemCheck(item, previousItemRef.current);
+      previousItemRef.current = item;
+
+      doSort(item);
+    },
+    [doSort]
+  );
+
+  useEffect(() => {
+    doSort(previousItemRef.current);
   }, []);
 
   return {
@@ -102,49 +128,29 @@ function useOrder() {
 }
 
 export const ListPage = () => {
-  const items = useOrder();
-  const dispatch = useDispatch();
-
-  const [_items, setItems] = useState(Object.values(items));
-
-  const shuffle = useCallback(() => setItems(_.shuffle(items)), [_items]);
-  const sortAlphabetically = useCallback(
-    () => setItems(_.orderBy(items, "name")),
-    [_items]
-  );
-  const unsort = useCallback(() => setItems(Object.values(items)), [_items]);
+  const { items, onCheck } = useOrder();
+  const oItems = Object.values(useSelector(selectItems));
 
   return (
     <main>
       <Header>Smart Shopper</Header>
-      <div>
-        <button
-          onClick={() => {
-            shuffle();
-          }}
-        >
-          Shuffle
-        </button>
-        <button
-          onClick={() => {
-            sortAlphabetically();
-          }}
-        >
-          Sort A-Z
-        </button>
-        <button
-          onClick={() => {
-            unsort();
-          }}
-        >
-          Unsort
-        </button>
-      </div>
       <FlipMove>
-        {_items.map((i) => (
-          <ListItem key={i.id} itemId={i.id} />
-        ))}
+        {items
+          .filter((i) => !oItems.find((b) => i.name === b.name)!.checked)
+          .map((i) => (
+            <ListItem
+              key={i.id}
+              itemId={i.id}
+              onClick={() => onCheck(i.name)}
+            />
+          ))}
       </FlipMove>
+      <hr />
+      {items
+        .filter((i) => oItems.find((b) => i.name === b.name)!.checked)
+        .map((i) => (
+          <ListItem key={i.id} itemId={i.id} onClick={_.noop} />
+        ))}
     </main>
   );
 };

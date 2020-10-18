@@ -3,7 +3,7 @@ import { RootState } from "./rootReducer";
 import { ShoppingItem } from "../ListPage";
 
 type ItemId = string;
-interface Item {
+export interface Item {
   id: string;
   name: ShoppingItem;
   checked: boolean;
