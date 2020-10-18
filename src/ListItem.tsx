@@ -10,24 +10,30 @@ interface Props {
 
 export const ListItem: React.FC<Props> = ({ itemName, onPress, checked }) => {
   return (
-    <Container>
-      <input
-        name=""
+    <Label>
+      <Checkbox
         type="checkbox"
         checked={checked}
         onChange={() => onPress(!checked)}
       />
-      <Name>{itemName}</Name>
-    </Container>
+      {itemName}
+    </Label>
   );
 };
 
 export default ListItem;
 
-const Container = styled.div`
-  margin-left: 3em;
+const Label = styled.label`
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  height: 48px;
+
+  &:hover {
+    background-color: #fafafa;
+  }
 `;
 
-const Name = styled.span`
-  font-weight: bold;
+const Checkbox = styled.input`
+  margin-right: 0.5rem;
 `;
