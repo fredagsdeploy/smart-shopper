@@ -5,6 +5,7 @@ import { selectItems } from "./reducers/shoppingLists";
 import ListItem from "./ListItem";
 import FlipMove from "react-flip-move";
 import _ from "lodash";
+import { useParams } from "react-router-dom";
 
 export type ShoppingItem = string;
 
@@ -40,19 +41,19 @@ const dataStore: Partial<Record<Relatables, Obj[]>> = {
       score: 1,
     },
   ],
-  "Bananer": [
+  Bananer: [
     {
       other: "Äpplen",
       score: 1,
     },
   ],
-  "Äpplen": [
+  Äpplen: [
     {
       other: "Bananer",
       score: 1,
     },
   ],
-  "Mjölk": [
+  Mjölk: [
     {
       other: "Bananer",
       score: 1,
@@ -126,12 +127,18 @@ function useOrder() {
 }
 
 export const ListPage = () => {
+  let { shoppingListId } = useParams();
   const { items, onCheck } = useOrder();
-  const oItems = Object.values(useSelector(selectItems("asd")));
+  const _oItems = useSelector(selectItems(shoppingListId));
 
+  if (_oItems === undefined) {
+    return <div>No such shopping list</div>;
+  }
+
+  const oItems = Object.values(_oItems);
   return (
     <main>
-      <Header>Smart Shopper</Header>
+      <Header>Smart Shopper {shoppingListId}</Header>
       <FlipMove>
         {items
           .filter((i) => !oItems.find((b) => i.id === b.id)!.checked)

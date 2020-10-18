@@ -116,7 +116,7 @@ export const shoppingLists = createReducer(initialState, (builder) => {
 });
 
 export const selectItems = (shoppingListId: string) => (state: RootState) =>
-  state.shoppingLists[shoppingListId].items;
+  state.shoppingLists[shoppingListId]?.items;
 export const selectItem = (shoppingListId: string, itemId: string) => (
   state: RootState
 ) => state.shoppingLists[shoppingListId].items[itemId];

@@ -1,35 +1,45 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import "./App.css";
 import styled from "styled-components";
-import { Item, selectItem, toggleItem, updateItem } from "./reducers/shoppingLists";
+import {
+  Item,
+  selectItem,
+  toggleItem,
+  updateItem,
+} from "./reducers/shoppingLists";
 import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "lodash";
+import { useParams } from "react-router-dom";
 
 interface Props {
   itemId: string;
   onClick: (item: Item) => void;
 }
 
-const SHOPPING_LIST_ID = "asd";
 export const ListItem = forwardRef<any, Props>(({ itemId, onClick }, ref) => {
+  let { shoppingListId } = useParams();
+
   const dispatch = useDispatch();
-  const item = useSelector(selectItem(SHOPPING_LIST_ID, itemId));
+  const item = useSelector(selectItem(shoppingListId, itemId));
   const [name, setName] = useState(item.name);
 
-  const dispatchUpdate = () => dispatch(updateItem({
-    shoppingListId: SHOPPING_LIST_ID,
-    itemId: item.id,
-    item: {
-      name: name
-    }
-  }));
+  const dispatchUpdate = () =>
+    dispatch(
+      updateItem({
+        shoppingListId: shoppingListId,
+        itemId: item.id,
+        item: {
+          name: name,
+        },
+      })
+    );
 
   const debouncedUpdate = debounce(dispatchUpdate, 500);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
     debouncedUpdate();
-  }
+  };
 
   return (
     <Label ref={ref}>
@@ -38,16 +48,12 @@ export const ListItem = forwardRef<any, Props>(({ itemId, onClick }, ref) => {
         checked={item.checked}
         onChange={() => {
           dispatch(
-            toggleItem({ shoppingListId: SHOPPING_LIST_ID, itemId: item.id })
+            toggleItem({ shoppingListId: shoppingListId, itemId: item.id })
           );
           onClick(item);
         }}
       />
-      <Text
-        type="text"
-        value={name}
-        onChange={handleChange}
-      />
+      <Text type="text" value={name} onChange={handleChange} />
     </Label>
   );
 });

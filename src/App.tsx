@@ -20,7 +20,7 @@ function App() {
             <SignIn />
           </Route>
 
-          <Route path="/shoppingList">
+          <Route path="/shoppingLists/:shoppingListId">
             <ListPage />
           </Route>
 
