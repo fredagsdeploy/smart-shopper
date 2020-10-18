@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import "./App.css";
 import styled from "styled-components";
 
@@ -8,18 +8,20 @@ interface Props {
   checked: boolean;
 }
 
-export const ListItem: React.FC<Props> = ({ itemName, onPress, checked }) => {
-  return (
-    <Label>
-      <Checkbox
-        type="checkbox"
-        checked={checked}
-        onChange={() => onPress(!checked)}
-      />
-      {itemName}
-    </Label>
-  );
-};
+export const ListItem = forwardRef<any, Props>(
+  ({ itemName, onPress, checked }, ref) => {
+    return (
+      <Label ref={ref}>
+        <Checkbox
+          type="checkbox"
+          checked={checked}
+          onChange={() => onPress(!checked)}
+        />
+        {itemName}
+      </Label>
+    );
+  }
+);
 
 export default ListItem;
 
