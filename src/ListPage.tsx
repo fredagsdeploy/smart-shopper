@@ -6,14 +6,16 @@ import ListItem from "./ListItem";
 import FlipMove from "react-flip-move";
 import _ from "lodash";
 
-export enum ShoppingItem {
-  "Bananer" = "Bananer",
-  "Äpplen" = "Äpplen",
-  "Mjölk" = "Mjölk",
-  "Mjöl" = "Mjöl",
-  "Kyckling" = "Kyckling",
-  "Ägg" = "Ägg",
-}
+export type ShoppingItem = string;
+
+//export enum ShoppingItem {
+//  "Bananer" = "Bananer",
+//  "Äpplen" = "Äpplen",
+//  "Mjölk" = "Mjölk",
+//  "Mjöl" = "Mjöl",
+//  "Kyckling" = "Kyckling",
+//  "Ägg" = "Ägg",
+//}
 
 enum Place {
   Start,
@@ -30,33 +32,33 @@ interface Obj {
 const dataStore: Partial<Record<Relatables, Obj[]>> = {
   [Place.Start]: [
     {
-      other: ShoppingItem.Bananer,
+      other: "Bananer",
       score: 10,
     },
     {
-      other: ShoppingItem.Kyckling,
+      other: "Kyckling",
       score: 1,
     },
   ],
-  [ShoppingItem.Bananer]: [
+  "Bananer": [
     {
-      other: ShoppingItem.Äpplen,
+      other: "Äpplen",
       score: 1,
     },
   ],
-  [ShoppingItem.Äpplen]: [
+  "Äpplen": [
     {
-      other: ShoppingItem.Bananer,
+      other: "Bananer",
       score: 1,
     },
   ],
-  [ShoppingItem.Mjölk]: [
+  "Mjölk": [
     {
-      other: ShoppingItem.Bananer,
+      other: "Bananer",
       score: 1,
     },
     {
-      other: ShoppingItem.Mjöl,
+      other: "Mjöl",
       score: 4,
     },
   ],
@@ -132,7 +134,7 @@ export const ListPage = () => {
       <Header>Smart Shopper</Header>
       <FlipMove>
         {items
-          .filter((i) => !oItems.find((b) => i.name === b.name)!.checked)
+          .filter((i) => !oItems.find((b) => i.id === b.id)!.checked)
           .map((i) => (
             <ListItem
               key={i.id}
@@ -143,7 +145,7 @@ export const ListPage = () => {
       </FlipMove>
       <hr />
       {items
-        .filter((i) => oItems.find((b) => i.name === b.name)!.checked)
+        .filter((i) => oItems.find((b) => i.id === b.id)!.checked)
         .map((i) => (
           <ListItem key={i.id} itemId={i.id} onClick={_.noop} />
         ))}

@@ -24,32 +24,32 @@ const initialState: ShoppingLists = {
       "1": {
         id: "1",
         checked: false,
-        name: ShoppingItem.Bananer,
+        name: "Bananer",
       },
       "2": {
         id: "2",
         checked: false,
-        name: ShoppingItem.Äpplen,
+        name: "Äpplen",
       },
       "3": {
         id: "3",
         checked: false,
-        name: ShoppingItem.Mjölk,
+        name: "Mjölk",
       },
       "4": {
         id: "4",
         checked: false,
-        name: ShoppingItem.Mjöl,
+        name: "Mjöl",
       },
       "5": {
         id: "5",
         checked: false,
-        name: ShoppingItem.Kyckling,
+        name: "Kyckling",
       },
       "6": {
         id: "6",
         checked: false,
-        name: ShoppingItem.Ägg,
+        name: "Ägg",
       },
     },
   },

@@ -1,8 +1,9 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import "./App.css";
 import styled from "styled-components";
-import { Item, selectItem, toggleItem } from "./reducers/shoppingLists";
+import { Item, selectItem, toggleItem, updateItem } from "./reducers/shoppingLists";
 import { useDispatch, useSelector } from "react-redux";
+import { debounce } from "lodash";
 
 interface Props {
   itemId: string;
@@ -13,6 +14,22 @@ const SHOPPING_LIST_ID = "asd";
 export const ListItem = forwardRef<any, Props>(({ itemId, onClick }, ref) => {
   const dispatch = useDispatch();
   const item = useSelector(selectItem(SHOPPING_LIST_ID, itemId));
+  const [name, setName] = useState(item.name);
+
+  const dispatchUpdate = () => dispatch(updateItem({
+    shoppingListId: SHOPPING_LIST_ID,
+    itemId: item.id,
+    item: {
+      name: name
+    }
+  }));
+
+  const debouncedUpdate = debounce(dispatchUpdate, 500);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value);
+    debouncedUpdate();
+  }
 
   return (
     <Label ref={ref}>
@@ -26,7 +43,11 @@ export const ListItem = forwardRef<any, Props>(({ itemId, onClick }, ref) => {
           onClick(item);
         }}
       />
-      {item.name}
+      <Text
+        type="text"
+        value={name}
+        onChange={handleChange}
+      />
     </Label>
   );
 });
@@ -45,5 +66,20 @@ const Label = styled.label`
 `;
 
 const Checkbox = styled.input`
-  margin-right: 0.5rem;
+  height: 24px;
+  width: 24px;
+  margin: 12px;
+`;
+
+const Text = styled.input`
+  border: none;
+  flex: 1;
+  background-color: transparent;
+  font-size: 1rem;
+
+  &:focus {
+    outline: none;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid #767676;
+  }
 `;
