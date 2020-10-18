@@ -140,7 +140,7 @@ const SHOPPING_LIST_ID = "asd";
 
 export const ListPage = () => {
   const dispatch = useDispatch();
-  let { shoppingListId } = useParams();
+  let { shoppingListId } = useParams<{shoppingListId: string}>();
   const { checkedItems, uncheckedItems, setCurrentItem } = useOrder(
     useSelector(selectItems(SHOPPING_LIST_ID))
   );
@@ -151,7 +151,7 @@ export const ListPage = () => {
 
   return (
     <main>
-      <Header>Smart Shopper {shoppingListId}</Header>
+      <Header>{shoppingListId}</Header>
       <FlipMove>
         {uncheckedItems.map((item) => (
           <ListItem

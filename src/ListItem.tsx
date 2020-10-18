@@ -1,6 +1,6 @@
 import React, { forwardRef, useState } from "react";
 import "./App.css";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { debounce } from "lodash";
 
 interface Props {
@@ -60,12 +60,17 @@ const Checkbox = styled.input`
   margin: 12px;
 `;
 
+const checkedStyle = css`
+  text-decoration: line-through;
+  color: #767676;
+`;
+
 const Text = styled.input`
   border: none;
   flex: 1;
   background-color: transparent;
   font-size: 1rem;
-  ${(props) => (props.checked ? "text-decoration: line-through" : "")};
+  ${props => props.checked ? checkedStyle : ''};
 
   &:focus {
     outline: none;
