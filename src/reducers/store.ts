@@ -1,4 +1,5 @@
 import rootReducer from "./rootReducer";
+/*
 import {
   persistReducer,
   persistStore,
@@ -9,6 +10,7 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
+*/
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 
 // const persistConfig = {
