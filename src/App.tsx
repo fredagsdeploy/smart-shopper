@@ -10,29 +10,36 @@ import {
 } from "react-router-dom";
 import { SignIn } from "./SignIn";
 import { ListPage } from "./ListPage";
+import { ShoppingListsPage } from "./ShoppingListsPage";
 
 function App() {
   return (
     <Provider store={store}>
-      <Router>
-        <Switch>
-          <Route path="/login">
-            <SignIn />
-          </Route>
+      <main>
+        <Router>
+          <Switch>
+            <Route path="/login">
+              <SignIn />
+            </Route>
 
-          <Route path="/shoppingLists/:shoppingListId">
-            <ListPage />
-          </Route>
+            <Route path="/shoppingLists/:shoppingListId">
+              <ListPage />
+            </Route>
 
-          <Route path="/">
-            <Redirect
-              to={{
-                pathname: "/login",
-              }}
-            />
-          </Route>
-        </Switch>
-      </Router>
+            <Route path="/shoppingLists">
+              <ShoppingListsPage />
+            </Route>
+
+            <Route path="/">
+              <Redirect
+                to={{
+                  pathname: "/login",
+                }}
+              />
+            </Route>
+          </Switch>
+        </Router>
+      </main>
     </Provider>
   );
 }

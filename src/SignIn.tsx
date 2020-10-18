@@ -12,7 +12,7 @@ export const SignIn = () => {
 
   const signIn = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
-    history.push("/shoppingLists/asd");
+    history.push("/shoppingLists");
   };
 
   return (

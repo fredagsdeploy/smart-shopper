@@ -1,6 +1,6 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import { RootState } from "./rootReducer";
-import { ShoppingItem } from "../ListPage";
+import { ShoppingItem } from "../customHooks/useOrder";
 
 export type ShoppingLists = Record<string, ShoppingList>;
 export type ShoppingListItems = Record<ItemId, Item>;
@@ -18,6 +18,10 @@ export interface Item {
 }
 
 const initialState: ShoppingLists = {
+  apa: {
+    id: "apa",
+    items: {},
+  },
   asd: {
     id: "asd",
     items: {
@@ -180,8 +184,10 @@ export const shoppingLists = createReducer(initialState, (builder) => {
   });
 });
 
+export const selectShoppingLists = (state: RootState) => state.shoppingLists;
+
 export const selectItems = (shoppingListId: string) => (state: RootState) =>
   state.shoppingLists[shoppingListId]?.items;
 export const selectItem = (shoppingListId: string, itemId: string) => (
   state: RootState
-) => state.shoppingLists[shoppingListId].items[itemId];
+) => state.shoppingLists[shoppingListId]?.items[itemId];
