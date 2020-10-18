@@ -21,20 +21,21 @@ export const PasswordField = ({label, value, onChange}: Props) => (
   </Label>
 );
 
-const Label = styled.span`
+const Label = styled.label`
   display: flex;
   flex-direction: column;
+  margin-bottom: 1.5rem;
 `;
 
 const Span = styled.span`
   margin-bottom: 0.5rem;
 `;
 
-const Input = styled.input`
+export const Input = styled.input`
   border-radius: 8px;
   border: 1px solid #959595;
   height: 48px;
   padding: 0 1rem;
-  margin-bottom: 1.5rem;
   min-width: 300px;
+  font-size: 1rem;
 `;

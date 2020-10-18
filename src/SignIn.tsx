@@ -16,7 +16,7 @@ export const SignIn = () => {
   };
 
   return (
-    <main>
+    <>
       <Header>Sign In</Header>
       <Form>
         <TextField
@@ -31,7 +31,7 @@ export const SignIn = () => {
         />
         <Button onClick={signIn}>Sign in</Button>
       </Form>
-    </main>
+    </>
   );
 };
 

@@ -4,12 +4,20 @@ import { useSelector } from "react-redux";
 import { selectShoppingLists } from "../reducers/shoppingLists";
 import { SmartShoppingList } from "../SmartShoppingList";
 
+const dataStoreSvenska = require("../dataStoreSvenska.json");
+const svenskaOrdKeys = Object.keys(dataStoreSvenska);
+
 export const ShoppingListsPage = () => {
   const shoppingLists = useSelector(selectShoppingLists);
 
   return (
     <Container>
       <Header>Shopping Lists</Header>
+      <datalist id="item_suggestion">
+        {svenskaOrdKeys.map((ord) => {
+          return <option key={ord} value={ord} />;
+        })}
+      </datalist>
       {Object.keys(shoppingLists).map((shoppingListId) => (
         <SmartShoppingList key={shoppingListId} shoppingListId={shoppingListId} />
       ))}

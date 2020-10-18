@@ -7,14 +7,12 @@ import {
 } from "./reducers/shoppingLists";
 import FlipMove from "react-flip-move";
 import ListItem from "./ListItem";
-import _ from "lodash";
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useOrder } from "./customHooks/useOrder";
 import { v4 as uuid } from "uuid";
-
-const dataStoreSvenska = require("./dataStoreSvenska.json");
-const svenskaOrdKeys = Object.keys(dataStoreSvenska);
+import { Button } from "./components/Button";
+import { Input } from "./components/Input";
 
 interface Props {
   shoppingListId: string;
@@ -28,18 +26,39 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
 
   const [newItemName, setNewItemName] = useState("");
 
+  const addNewItem = () => {
+    const newItemId = uuid();
+    dispatch(
+      addItem({
+        shoppingListId: shoppingListId,
+        itemId: newItemId,
+        item: { name: newItemName, id: newItemId, checked: false },
+      })
+    );
+    setNewItemName("");
+  };
+
   if (checkedItems === undefined) {
     return <div>No such shopping list</div>;
   }
 
   return (
     <ShoppingList>
-      <datalist id="item_suggestion">
-        {svenskaOrdKeys.map((ord) => {
-          return <option value={ord} />;
-        })}
-      </datalist>
       <Header>{shoppingListId}</Header>
+      <NewItemRow>
+        <Input
+          list="item_suggestion"
+          type="text"
+          value={newItemName}
+          onChange={(e) => setNewItemName(e.target.value)}
+          aria-label="New item"
+          placeholder="New item"
+          style={{marginRight: "0.5rem", minWidth: "auto", flex: 1}}
+        />
+        <Button onClick={addNewItem}>
+          Add
+        </Button>
+      </NewItemRow>
       <FlipMove>
         {uncheckedItems.map((item) => (
           <ListItem
@@ -94,36 +113,12 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
           }}
         />
       ))}
-      <div>
-        <input
-          list="item_suggestion"
-          type="text"
-          value={newItemName}
-          onChange={(e) => setNewItemName(e.target.value)}
-        />
-        <button
-          onClick={() => {
-            const newItemId = uuid();
-            dispatch(
-              addItem({
-                shoppingListId: shoppingListId,
-                itemId: newItemId,
-                item: { name: newItemName, id: newItemId, checked: false },
-              })
-            );
-            setNewItemName("");
-          }}
-        >
-          Add
-        </button>
-      </div>
-      <hr />
     </ShoppingList>
   );
 };
 
 const Header = styled.h2`
-  margin: 1rem;
+  margin: 1.5rem 1rem;
 `;
 
 const ShoppingList = styled.section`
@@ -131,5 +126,12 @@ const ShoppingList = styled.section`
   width: 100%;
   max-width: 800px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  margin-bottom: 1rem;
+`;
+
+const NewItemRow = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
   margin-bottom: 1rem;
 `;
