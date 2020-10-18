@@ -46,7 +46,7 @@ export default ListItem;
 const Container = styled.div`
   display: flex;
   align-items: center;
-  padding: 0 1rem;
+  padding: 0 1rem 0 0.5rem;
   height: 48px;
 
   &:hover {

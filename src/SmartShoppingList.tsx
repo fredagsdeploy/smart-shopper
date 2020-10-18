@@ -11,7 +11,6 @@ import _ from "lodash";
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useOrder } from "./customHooks/useOrder";
-import Fuse from "fuse.js";
 import { v4 as uuid } from "uuid";
 
 const dataStoreSvenska = require("./dataStoreSvenska.json");
@@ -34,7 +33,7 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
   }
 
   return (
-    <div>
+    <ShoppingList>
       <datalist id="item_suggestion">
         {svenskaOrdKeys.map((ord) => {
           return <option value={ord} />;
@@ -119,10 +118,18 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
         </button>
       </div>
       <hr />
-    </div>
+    </ShoppingList>
   );
 };
 
-const Header = styled.h1`
-  margin-left: 1rem;
+const Header = styled.h2`
+  margin: 1rem;
+`;
+
+const ShoppingList = styled.section`
+  background-color: white;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  margin-bottom: 1rem;
 `;
