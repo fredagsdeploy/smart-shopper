@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, useState } from "react";
 import "./App.css";
 import styled from "styled-components";
 import {
@@ -42,7 +42,7 @@ export const ListItem = forwardRef<any, Props>(({ itemId, onClick }, ref) => {
   };
 
   return (
-    <Label ref={ref}>
+    <Container ref={ref}>
       <Checkbox
         type="checkbox"
         checked={item.checked}
@@ -52,15 +52,22 @@ export const ListItem = forwardRef<any, Props>(({ itemId, onClick }, ref) => {
           );
           onClick(item);
         }}
+        aria-label={name}
       />
-      <Text type="text" value={name} onChange={handleChange} />
-    </Label>
+      <Text
+        type="text"
+        value={name}
+        onChange={handleChange}
+        checked={item.checked}
+        aria-label="Item"
+      />
+    </Container>
   );
 });
 
 export default ListItem;
 
-const Label = styled.label`
+const Container = styled.div`
   display: flex;
   align-items: center;
   padding: 0 1rem;
@@ -82,6 +89,7 @@ const Text = styled.input`
   flex: 1;
   background-color: transparent;
   font-size: 1rem;
+  ${props => props.checked ? 'text-decoration: line-through' : ''};
 
   &:focus {
     outline: none;
