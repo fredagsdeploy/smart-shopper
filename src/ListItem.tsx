@@ -8,10 +8,11 @@ interface Props {
   checked: boolean;
   onChange: () => void;
   onNameChange: (name: string) => void;
+  onRemove: () => void;
 }
 
 export const ListItem = forwardRef<any, Props>(
-  ({ name, checked, onChange, onNameChange }, ref) => {
+  ({ name, checked, onChange, onNameChange, onRemove }, ref) => {
     const [_name, setName] = useState(name);
 
     const debouncedUpdate = debounce(onNameChange, 500);
@@ -36,6 +37,9 @@ export const ListItem = forwardRef<any, Props>(
           checked={checked}
           aria-label="Item"
         />
+        <DeleteButton onClick={onRemove}>
+          <span role="img" aria-label="Delete">✖️</span>
+        </DeleteButton>
       </Container>
     );
   }
@@ -43,7 +47,20 @@ export const ListItem = forwardRef<any, Props>(
 
 export default ListItem;
 
+const DeleteButton = styled.button`
+  height: 48px;
+  width: 48px;
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  z-index: 1;
+  right: 0.25rem;
+  display: none;
+  cursor: pointer;
+`;
+
 const Container = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   padding: 0 1rem 0 0.5rem;
@@ -51,6 +68,10 @@ const Container = styled.div`
 
   &:hover {
     background-color: #fafafa;
+  }
+  
+  &:focus-within ${DeleteButton} {
+    display: block;
   }
 `;
 

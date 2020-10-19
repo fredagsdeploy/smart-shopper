@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import {
   addItem,
+  removeItem,
   selectItems,
   toggleItem,
   updateItem,
@@ -89,6 +90,15 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
                 })
               );
             }}
+            onRemove={() => {
+              dispatch(
+                removeItem({
+                  shoppingListId: shoppingListId,
+                  itemId: item.id,
+                })
+              );
+              setCurrentItem(item.name);
+            }}
           />
         ))}
       </FlipMove>
@@ -114,6 +124,15 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
                 },
               })
             );
+          }}
+          onRemove={() => {
+            dispatch(
+              removeItem({
+                shoppingListId: shoppingListId,
+                itemId: item.id,
+              })
+            );
+            setCurrentItem(item.name);
           }}
         />
       ))}
