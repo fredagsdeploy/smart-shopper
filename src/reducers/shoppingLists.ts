@@ -156,6 +156,7 @@ export const toggleItem = createAsyncThunk<
     const item = selectItem(shoppingListId, itemId)(state);
 
     await postCheckUncheckEvent({
+      eventName: "item_checked",
       shoppingListId,
       itemId,
       checked: item.checked,
