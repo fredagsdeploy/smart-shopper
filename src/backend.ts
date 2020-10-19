@@ -1,5 +1,5 @@
 const hostname = window.location.host;
-const eventApiUrl = `https://${hostname}/eventApi/`;
+const eventApiUrl = `https://${hostname}/eventApi/telegraf`;
 const authString = "";
 export const postCheckUncheckEvent = (event: any) => {
   var myHeaders = new Headers();
