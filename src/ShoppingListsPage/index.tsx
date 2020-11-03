@@ -3,12 +3,14 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { selectShoppingLists } from "../reducers/shoppingLists";
 import { SmartShoppingList } from "../SmartShoppingList";
+import _ from 'lodash';
 
 const dataStoreSvenska = require("../dataStoreSvenska.json");
 const svenskaOrdKeys = Object.keys(dataStoreSvenska);
 
 export const ShoppingListsPage = () => {
   const shoppingLists = useSelector(selectShoppingLists);
+  const shoppingListsOrderedByModified = _.orderBy(Object.values(shoppingLists), "createdAt", "desc");
 
   return (
     <Container>
@@ -18,8 +20,11 @@ export const ShoppingListsPage = () => {
           return <option key={ord} value={ord} />;
         })}
       </datalist>
-      {Object.keys(shoppingLists).map((shoppingListId) => (
-        <SmartShoppingList key={shoppingListId} shoppingListId={shoppingListId} />
+      {shoppingListsOrderedByModified.map((shoppingList) => (
+        <SmartShoppingList
+          key={shoppingList.id}
+          shoppingListId={shoppingList.id}
+        />
       ))}
     </Container>
   );
@@ -34,6 +39,6 @@ const Container = styled.div`
 
 const Header = styled.h1`
   position: absolute;
-  clip: rect(0,0,0,0);
-  clip-path: rect(0,0,0,0);
+  clip: rect(0, 0, 0, 0);
+  clip-path: rect(0, 0, 0, 0);
 `;

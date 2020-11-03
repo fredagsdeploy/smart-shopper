@@ -6,6 +6,7 @@ import {
 import { RootState } from "./rootReducer";
 import { ShoppingItem } from "../customHooks/useOrder";
 import { postCheckUncheckEvent } from "../backend";
+import {formatISO} from 'date-fns';
 
 export type ShoppingLists = Record<string, ShoppingList>;
 export type ShoppingListItems = Record<ItemId, Item>;
@@ -13,6 +14,7 @@ export type ShoppingListItems = Record<ItemId, Item>;
 export interface ShoppingList {
   id: string;
   items: ShoppingListItems;
+  createdAt: string;
 }
 
 export type ItemId = string;
@@ -26,9 +28,11 @@ const initialState: ShoppingLists = {
   apa: {
     id: "apa",
     items: {},
+    createdAt: "2020-11-03T22:16:05+00:00",
   },
   asd: {
     id: "asd",
+    createdAt: "2020-11-03T22:16:05+00:00",
     items: {
       "1": {
         id: "1",
@@ -206,7 +210,7 @@ export const shoppingLists = createReducer(initialState, (builder) => {
   });
   builder.addCase(addShoppingList, (state, action) => {
     const { shoppingListId } = action.payload;
-    state[shoppingListId] = { id: shoppingListId, items: {} };
+    state[shoppingListId] = { id: shoppingListId, items: {}, createdAt: formatISO(new Date()) };
   });
   builder.addCase(removeShoppingList, (state, action) => {
     const { shoppingListId } = action.payload;
@@ -215,6 +219,8 @@ export const shoppingLists = createReducer(initialState, (builder) => {
 });
 
 export const selectShoppingLists = (state: RootState) => state.shoppingLists;
+
+export const selectShoppingList = (id: string) => (state: RootState) => state.shoppingLists[id];
 
 export const selectItems = (shoppingListId: string) => (state: RootState) =>
   state.shoppingLists[shoppingListId]?.items;

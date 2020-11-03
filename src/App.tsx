@@ -2,17 +2,18 @@ import React from "react";
 import { PersistGate } from "redux-persist/integration/react";
 import "./App.css";
 import { Provider } from "react-redux";
-import { store, persistor } from "./reducers/store";
+import { persistor, store } from "./reducers/store";
 import {
   BrowserRouter as Router,
-  Switch,
-  Route,
   Redirect,
+  Route,
+  Switch,
 } from "react-router-dom";
 import { SignIn } from "./SignIn";
 import { ListPage } from "./ListPage";
 import { ShoppingListsPage } from "./ShoppingListsPage";
 import { Nav, NavItemProps } from "./components/Nav";
+import { Footer } from "./Footer";
 
 function App() {
   const navItems: NavItemProps[] = [
@@ -48,6 +49,7 @@ function App() {
               </Route>
             </Switch>
           </main>
+          <Footer />
         </Router>
       </PersistGate>
     </Provider>

@@ -1,19 +1,13 @@
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addItem,
-  removeItem,
-  selectItems,
-  toggleItem,
-  updateItem,
-} from "./reducers/shoppingLists";
+import {useDispatch, useSelector} from "react-redux";
+import {addItem, removeItem, selectItems, toggleItem, updateItem,} from "./reducers/shoppingLists";
 import FlipMove from "react-flip-move";
 import ListItem from "./ListItem";
-import React, { useState } from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
-import { useOrder } from "./customHooks/useOrder";
-import { v4 as uuid } from "uuid";
-import { Button } from "./components/Button";
-import { Input } from "./components/Input";
+import {useOrder} from "./customHooks/useOrder";
+import {v4 as uuid} from "uuid";
+import {Button} from "./components/Button";
+import {Input} from "./components/Input";
 
 interface Props {
   shoppingListId: string;
