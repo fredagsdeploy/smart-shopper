@@ -163,7 +163,7 @@ export const toggleItem = createAsyncThunk<
       eventName: "item_checked",
       shoppingListId,
       itemId,
-      checked: item.checked,
+      checked: !item.checked,
       name: item.name,
     });
     return { shoppingListId, itemId };
