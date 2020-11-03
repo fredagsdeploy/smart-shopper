@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { selectShoppingLists } from "../reducers/shoppingLists";
 import { SmartShoppingList } from "../SmartShoppingList";
 import _ from 'lodash';
+import {Footer} from "../Footer";
 
 const dataStoreSvenska = require("../dataStoreSvenska.json");
 const svenskaOrdKeys = Object.keys(dataStoreSvenska);
@@ -26,6 +27,7 @@ export const ShoppingListsPage = () => {
           shoppingListId={shoppingList.id}
         />
       ))}
+      <Footer />
     </Container>
   );
 };
