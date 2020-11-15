@@ -1,7 +1,6 @@
 const hostname = window.location.host;
 const eventApiUrl = `https://${hostname}/eventApi/telegraf`;
-const authString =
-  "Basic dGVsZWdyYWY6MkI0NDQmZ3l5JER4elZAJWVEQHY0Z2dYM0lLOElIN2x4ajFkV0s0dldxI0ZxTTI4bkR1U0Z6Vip2JWNpTUFhMw==";
+const authString = "";
 export const postCheckUncheckEvent = (event: any) => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", authString);
