@@ -1,20 +1,7 @@
 import { ShoppingListItems } from "../reducers/shoppingLists";
 import { useCallback, useMemo, useRef } from "react";
 import _ from "lodash";
-
-export type ShoppingItem = string;
-
-enum Place {
-  Start,
-  End,
-}
-
-type Relatables = ShoppingItem | Place;
-
-interface Relatable {
-  item: ShoppingItem;
-  score: number;
-}
+import { Place, Relatable, Relatables, ShoppingItem } from "../types";
 
 const dataStore: Partial<Record<
   Relatables,

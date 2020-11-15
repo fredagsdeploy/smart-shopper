@@ -1,8 +1,10 @@
+import { CheckedUncheckedEvent } from "./types";
+
 const hostname = window.location.host;
 const eventApiUrl = `https://${hostname}/eventApi/telegraf`;
 const authString = "";
-export const postCheckUncheckEvent = (event: any) => {
-  var myHeaders = new Headers();
+export const postCheckUncheckEvent = (event: CheckedUncheckedEvent) => {
+  let myHeaders = new Headers();
   myHeaders.append("Authorization", authString);
   myHeaders.append("Content-Type", "application/json");
   myHeaders.append("Access-Control-Allow-Origin", "*");
@@ -15,9 +17,9 @@ export const postCheckUncheckEvent = (event: any) => {
     "Origin, Content-Type, X-Auth-Token"
   );
 
-  var raw = JSON.stringify(event);
+  let raw = JSON.stringify(event);
 
-  var requestOptions: RequestInit = {
+  let requestOptions: RequestInit = {
     method: "POST",
     headers: myHeaders,
     body: raw,

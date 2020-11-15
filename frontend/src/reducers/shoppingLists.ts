@@ -4,9 +4,9 @@ import {
   createAsyncThunk,
 } from "@reduxjs/toolkit";
 import { RootState } from "./rootReducer";
-import { ShoppingItem } from "../customHooks/useOrder";
 import { postCheckUncheckEvent } from "../backend";
-import {formatISO} from 'date-fns';
+import { formatISO } from "date-fns";
+import { ShoppingItem } from "../types";
 
 export type ShoppingLists = Record<string, ShoppingList>;
 export type ShoppingListItems = Record<ItemId, Item>;
@@ -210,7 +210,11 @@ export const shoppingLists = createReducer(initialState, (builder) => {
   });
   builder.addCase(addShoppingList, (state, action) => {
     const { shoppingListId } = action.payload;
-    state[shoppingListId] = { id: shoppingListId, items: {}, createdAt: formatISO(new Date()) };
+    state[shoppingListId] = {
+      id: shoppingListId,
+      items: {},
+      createdAt: formatISO(new Date()),
+    };
   });
   builder.addCase(removeShoppingList, (state, action) => {
     const { shoppingListId } = action.payload;
@@ -220,7 +224,8 @@ export const shoppingLists = createReducer(initialState, (builder) => {
 
 export const selectShoppingLists = (state: RootState) => state.shoppingLists;
 
-export const selectShoppingList = (id: string) => (state: RootState) => state.shoppingLists[id];
+export const selectShoppingList = (id: string) => (state: RootState) =>
+  state.shoppingLists[id];
 
 export const selectItems = (shoppingListId: string) => (state: RootState) =>
   state.shoppingLists[shoppingListId]?.items;
