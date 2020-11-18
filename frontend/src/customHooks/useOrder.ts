@@ -1,7 +1,15 @@
 import { ShoppingListItems } from "../reducers/shoppingLists";
 import { useCallback, useMemo, useRef } from "react";
 import _ from "lodash";
-import { Place, Relatable, Relatables, ShoppingItem } from "../types";
+import {
+  ItemGraph,
+  Place,
+  Relatable,
+  Relatables,
+  ShoppingItem,
+} from "../types";
+import { useSelector } from "react-redux";
+import { selectItemGraph } from "../reducers/itemGraph";
 
 const dataStore: Partial<Record<
   Relatables,
@@ -18,7 +26,12 @@ dataStore[Place.Start] = [
   },
 ];
 
-function onItemCheck(item: ShoppingItem, previous: Relatables) {
+function onItemCheck(
+  item: ShoppingItem,
+  previous: Relatables,
+  itemGraph: ItemGraph
+) {
+  const dataStore = itemGraph;
   if (!dataStore[previous]) {
     dataStore[previous] = [];
   }
@@ -39,9 +52,10 @@ function onItemCheck(item: ShoppingItem, previous: Relatables) {
 export function useOrder(shoppingCardItems: ShoppingListItems) {
   const previousItemRef = useRef<Relatables>(Place.Start);
   const shoppingCartItemsValues = Object.values(shoppingCardItems);
+  const itemGraph = useSelector(selectItemGraph);
 
   const setCurrentItem = useCallback((item: ShoppingItem) => {
-    onItemCheck(item, previousItemRef.current);
+    onItemCheck(item, previousItemRef.current, itemGraph);
     previousItemRef.current = item;
   }, []);
 
