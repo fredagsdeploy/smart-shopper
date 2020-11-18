@@ -1,0 +1,20 @@
+smartcart.tejpb.it {
+        handle_path /eventApi/telegraf {
+                basicauth {
+                        telegraf <secret password>
+                }
+                rewrite * /telegraf
+                reverse_proxy {
+                        to 127.0.0.1:8090
+                }
+        }
+        reverse_proxy /api/* localhost:3001{
+        handle {
+                root * /var/www/smart-shopper/frontend/build
+        }
+        #root * /var/www/smart-shopper/build
+        file_server
+        log {
+                output stdout
+        }
+}
