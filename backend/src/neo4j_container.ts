@@ -14,26 +14,26 @@ export const generateItemGraph = async (
   let newGraph = {};
 
   let session = driver.session({
-    database: 'foo',
+    database: process.env.DATABASE,
     defaultAccessMode: neo4j.session.WRITE
   })
 
   const result = await session
-    .run('MATCH p = (food1:Food)-[r:NEAR {store: $storeName, userId: $userId} ]->(food2:Food) RETURN food1, food2, r', {
+    .run('MATCH p = (food1)-[r:NEAR {store: $storeName, userId: $userId} ]->(food2) RETURN food1, food2, r', {
       storeName, userId
     });
 
   result.records.forEach(record => {
       console.log(record)
 
-      let first_food = record.get("food1");
-      let second_food = record.get("food2");
-      let relationship = record.get("r");
+      let first_food = record.get("food1").get("name");
+      let second_food = record.get("food2").get("name");
+      let gravity = record.get("r").get("gravity");
 
       newGraph[first_food] = increaseEdgeScore(
         newGraph[second_food] ?? [],
         second_food,
-        relationship.gravity
+        gravity
       );
     }
   )
