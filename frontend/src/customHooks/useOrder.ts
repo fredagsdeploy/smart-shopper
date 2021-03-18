@@ -1,5 +1,5 @@
-import { ShoppingListItems } from "../reducers/shoppingLists";
-import { useCallback, useMemo, useRef } from "react";
+import {ShoppingListItems} from "../reducers/shoppingLists";
+import {useCallback, useMemo, useRef} from "react";
 import _ from "lodash";
 import {
   ItemGraph,
@@ -8,13 +8,12 @@ import {
   Relatables,
   ShoppingItem,
 } from "../types";
-import { useSelector } from "react-redux";
-import { selectItemGraph } from "../reducers/itemGraph";
+import {useSelector} from "react-redux";
+import {selectItemGraph} from "../reducers/itemGraph";
 
-const dataStore: Partial<Record<
-  Relatables,
-  Relatable[]
->> = require("../dataStoreSvenska.json");
+const dataStore: Partial<Record<Relatables,
+  Relatable[]>> = {};
+
 dataStore[Place.Start] = [
   {
     item: "Fläskkött",
@@ -43,7 +42,7 @@ function onItemCheck(
   if (candidate) {
     candidate.score = candidate.score + 1;
   } else {
-    dataStore[previous]?.push({ item: item, score: 1 });
+    dataStore[previous]?.push({item: item, score: 1});
   }
 
   return dataStore;

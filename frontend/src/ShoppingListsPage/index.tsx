@@ -6,9 +6,6 @@ import { SmartShoppingList } from "../SmartShoppingList";
 import _ from 'lodash';
 import {Footer} from "../Footer";
 
-const dataStoreSvenska = require("../dataStoreSvenska.json");
-const svenskaOrdKeys = Object.keys(dataStoreSvenska);
-
 export const ShoppingListsPage = () => {
   const shoppingLists = useSelector(selectShoppingLists);
   const shoppingListsOrderedByModified = _.orderBy(Object.values(shoppingLists), "createdAt", "desc");
@@ -16,11 +13,7 @@ export const ShoppingListsPage = () => {
   return (
     <Container>
       <Header>Shopping Lists</Header>
-      <datalist id="item_suggestion">
-        {svenskaOrdKeys.map((ord) => {
-          return <option key={ord} value={ord} />;
-        })}
-      </datalist>
+      <datalist id="item_suggestion" />
       {shoppingListsOrderedByModified.map((shoppingList) => (
         <SmartShoppingList
           key={shoppingList.id}

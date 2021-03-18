@@ -96,7 +96,7 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
           />
         ))}
       </FlipMove>
-      <br />
+      <br />import json
       <br />
       {checkedItems.map((item) => (
         <ListItem
