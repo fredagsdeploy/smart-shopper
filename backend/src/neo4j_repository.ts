@@ -1,8 +1,5 @@
 import neo4j from "neo4j-driver";
 import { ItemGraph, Relatable } from "./types";
-import { scryptSync } from "crypto";
-
-console.log(process.env);
 
 let driver = neo4j.driver(
   `neo4j://${process.env.DATABASE_HOST}`,
@@ -21,7 +18,7 @@ export const generateItemGraph = async (
   });
 
   const result = await session.run(
-    "MATCH p = (to)-[r:NEAR {store: $storeName, userId: $userId} ]->(from) RETURN to, from, r",
+    "MATCH p = (to)-[r:NEAR {storeName: $storeName, userId: $userId} ]->(from) RETURN to, from, r",
     {
       storeName,
       userId,
@@ -29,11 +26,12 @@ export const generateItemGraph = async (
   );
 
   result.records.forEach((record) => {
-    console.log(record);
+    console.log(record)
+    console.log(record.get("r").properties)
 
-    let first_food = record.get("to").get("name");
-    let second_food = record.get("from").get("name");
-    let gravity = record.get("r").get("gravity");
+    let first_food = record.get("to").properties.name
+    let second_food = record.get("from").properties.name
+    let gravity = record.get("r").properties.gravity.toInt()
 
     newGraph[first_food] = increaseEdgeScore(
       newGraph[second_food] ?? [],
@@ -65,55 +63,6 @@ export const increaseEdgeScore = (
     newEdges.push({ item: targetNodeName, score: value });
   }
   return newEdges;
-};
-
-export const addNode = async (foodNames: string[]) => {
-  let session = driver.session({
-    database: process.env.DATABASE,
-    defaultAccessMode: neo4j.session.WRITE,
-  });
-
-  await Promise.all(
-    foodNames.map((foodName) => {
-      return session.run("CREATE (:Food {name : $foodName})", {
-        foodName,
-      });
-    })
-  );
-};
-
-export const addEdge = async (
-  foodRelationships: {
-    fromFood: string;
-    toFood: string;
-    storeName: string;
-    userId: string;
-  }[]
-) => {
-  let session = driver.session({
-    database: process.env.DATABASE,
-    defaultAccessMode: neo4j.session.WRITE,
-  });
-
-  await Promise.all(
-    foodRelationships.map(({ fromFood, toFood, storeName, userId }) => {
-      return session.run(
-        "MATCH (from: Food {name: $fromFood})\n" +
-          "MATCH (to: Food {name: $toFood})\n" +
-          "MERGE (from)-[r: NEAR {storeName: $storeName, userId: $userId}]->(to)\n" +
-          "ON CREATE\n" +
-          "  SET r.gravity = 1\n" +
-          "ON MATCH\n" +
-          "  SET r.gravity += 1",
-        {
-          fromFood,
-          toFood,
-          storeName,
-          userId,
-        }
-      );
-    })
-  );
 };
 
 process.on("exit", () => {

@@ -1,0 +1,22 @@
+{
+  "name": "Neo4jSinkConnector",
+  "config": {
+    "connector.class": "streams.kafka.connect.sink.Neo4jSinkConnector",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": false,
+    "topics": "addNode,addEdge",
+    "_comment": "Sink for neo4j, loads data from events into database",
+    "neo4j.topic.cypher.addNode": "MERGE (:Food {name: event.name})",
+    "neo4j.topic.cypher.addEdge": "MATCH (from: Food {name: event.fromFood}) MATCH (to: Food {name: event.toFood}) MERGE (from)-[r: NEAR {storeName: event.storeName, userId: event.userId}]->(to) ON CREATE SET r.gravity = 1 ON MATCH SET r.gravity = r.gravity + 1",
+    "errors.retry.timeout": "-1",
+    "errors.retry.delay.max.ms": "1000",
+    "errors.tolerance": "all",
+    "errors.log.enable": true,
+    "errors.log.include.messages": true,
+    "neo4j.server.uri": "bolt://neo4j:7687",
+    "neo4j.authentication.basic.username": "neo4j",
+    "neo4j.authentication.basic.password": "",
+    "neo4j.encryption.enabled": false
+  }
+}
