@@ -12,5 +12,7 @@ COPY ./src /app/
 
 RUN yarn tsc
 
+EXPOSE 8080
+
 ENTRYPOINT ["node", "build/index.js"]
 
