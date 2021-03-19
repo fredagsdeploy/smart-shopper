@@ -170,3 +170,13 @@ services:
       - "8080:8080"
     volumes:
       - ./backend/src:/app/src
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: dev.Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/node_modules:/app/node_modules
