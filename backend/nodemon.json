@@ -1,6 +1,0 @@
-{
-  "watch": ["src"],
-  "ext": "ts,json",
-  "ignore": ["src/**/*.spec.ts"],
-  "exec": "yarn run tsc && node build/backend/src/index.js"
-}

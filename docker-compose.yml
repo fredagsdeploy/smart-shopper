@@ -153,3 +153,20 @@ services:
       KAFKA_REST_BOOTSTRAP_SERVERS: "broker:29092"
       KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
       KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+  oauth:
+    image: quay.io/oauth2-proxy/oauth2-proxy
+    command: --config=/etc/oauth2-proxy.cfg
+    ports:
+      - "4180:4180"
+    volumes:
+      - ./oauth2-proxy.cfg:/etc/oauth2-proxy.cfg
+    env_file:
+      - .env.${OAUTH_ENV:-local}
+  backend:
+    build:
+      context: ./backend
+      dockerfile: dev.Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/src:/app/src
