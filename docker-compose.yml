@@ -162,6 +162,8 @@ services:
       - ./oauth2-proxy.cfg:/etc/oauth2-proxy.cfg
     env_file:
       - .env.${OAUTH_ENV:-local}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   backend:
     build:
       context: ./backend
@@ -170,3 +172,16 @@ services:
       - "8080:8080"
     volumes:
       - ./backend/src:/app/src
+      - ./backend/.env:/app/.env
+  neo4j:
+    image: neo4j:4.2
+    ports:
+      - "7687:7687"
+      - "7474:7474"
+      - "7473:7473"
+    volumes:
+      - neo4j-data:/data
+    environment:
+      NEO4J_AUTH: none
+volumes:
+  neo4j-data: {}
