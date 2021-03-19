@@ -39,7 +39,7 @@ const AppRouter = () => {
         }
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [dispatch]);
 
   const navItems: NavItemProps[] = [
     { to: "/shoppingLists", title: "Shopping Lists" },
