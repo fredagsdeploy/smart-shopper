@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components/native";
 import { debounce } from "lodash";
-import { TextInput } from "react-native";
+import { TextInput, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
 interface Props {
   name: string;
@@ -11,53 +12,43 @@ interface Props {
   onRemove: () => void;
 }
 
-export const ListItem : React.VFC<Props> = ({ name, checked, onChange, onNameChange, onRemove }) => {
-    const [_name, setName] = useState(name);
+export const ListItem: React.VFC<Props> = ({
+  name,
+  checked,
+  onChange,
+  onNameChange,
+  onRemove,
+}) => {
+  const [_name, setName] = useState(name);
 
-    const debouncedUpdate = debounce(onNameChange, 500);
+  const debouncedUpdate = debounce(onNameChange, 500);
 
-    const handleChange = (text: string) => {
-      setName(text);
-      debouncedUpdate(text);
-    };
-
-    return (
-      <Container>
-        <Checkbox onPress={onChange} style={checked ? { backgroundColor: "blue"} : undefined}/>
-        <TextInput
-          value={_name}
-          onChangeText={handleChange}
-        />
-        <DeleteButton onPress={onRemove} title={"✖️"}/>
-      </Container>
-    );
+  const handleChange = (text: string) => {
+    setName(text);
+    debouncedUpdate(text);
   };
 
-export default ListItem;
-
-const DeleteButton = styled.Button`
-  height: 48px;
-  width: 48px;
-  /* right: 0.25rem; */
-`;
+  return (
+    <Container>
+      <Feather
+        name={checked ? "check-square" : "square"}
+        size={24}
+        style={{ marginTop: 2 }}
+        onPress={onChange}
+      />
+      <View style={{ width: 10 }} />
+      <TextInput
+        style={{ fontSize: 16 }}
+        value={_name}
+        onChangeText={handleChange}
+      />
+    </Container>
+  );
+};
 
 const Container = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
-  /* padding: 0 1rem 0 0.5rem; */
-  height: 48px;
-`;
-
-const Checkbox = styled.TouchableOpacity`
-  height: 24px;
-  width: 24px;
-  background-color: red;
-  margin: 12px;
-`;
-
-const Text = styled.TextInput`
-  flex: 1;
-  background-color: transparent;
-  /* font-size: 1rem; */
+  padding: 10px 0;
 `;

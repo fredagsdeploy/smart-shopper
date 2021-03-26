@@ -2,11 +2,11 @@ import { EvilIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as React from "react";
 
-import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { BottomTabParamList } from "../route-types";
 import { ShoppingListsPage } from "../src/ShoppingListsPage/ShoppingListsPage";
 import { ListPage } from "../src/ListPage";
+import { ghostButtonTextColor } from "../src/constants/colors";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -16,7 +16,7 @@ export default function BottomTabNavigator() {
   return (
     <BottomTab.Navigator
       initialRouteName="ShoppingLists"
-      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}
+      tabBarOptions={{ activeTintColor: ghostButtonTextColor }}
     >
       <BottomTab.Screen
         name="ShoppingLists"
@@ -34,7 +34,6 @@ export default function BottomTabNavigator() {
           tabBarIcon: ({ color }) => <TabBarIcon name="cart" color={color} />,
         }}
       />
-
     </BottomTab.Navigator>
   );
 }

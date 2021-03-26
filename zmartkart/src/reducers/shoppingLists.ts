@@ -23,7 +23,60 @@ export interface Item {
 const initialState: ShoppingLists = {
   apa: {
     id: "apa",
-    items: {},
+    items: {
+      "1": {
+        id: "1",
+        checked: false,
+        name: "Grönkål",
+      },
+      "2": {
+        id: "2",
+        checked: false,
+        name: "Äpple",
+      },
+      "3": {
+        id: "3",
+        checked: false,
+        name: "Sötpotatis",
+      },
+      "4": {
+        id: "4",
+        checked: false,
+        name: "Mjöl",
+      },
+      "5": {
+        id: "5",
+        checked: false,
+        name: "Kycklingkött",
+      },
+    },
+    createdAt: "2020-11-03T22:16:05+00:00",
+  },
+  aasaspa: {
+    id: "aasaspa",
+    items: {
+      "1": {
+        id: "1",
+        checked: false,
+        name: "Grönkål",
+      },
+      "2": {
+        id: "2",
+        checked: false,
+        name: "Äpple",
+      },
+      "3": {
+        id: "3",
+        checked: false,
+        name: "Sötpotatis",
+      },
+      "4": {
+        id: "4",
+        checked: false,
+        name: "Mjöl",
+      },
+
+    },
     createdAt: "2020-11-03T22:16:05+00:00",
   },
   asd: {
