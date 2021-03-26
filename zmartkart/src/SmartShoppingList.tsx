@@ -13,6 +13,7 @@ import styled from "styled-components/native";
 import { useOrder } from "./customHooks/useOrder";
 import { v4 as uuid } from "react-native-uuid";
 import {
+  ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   Text,
@@ -22,6 +23,14 @@ import {
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { ghostButtonTextColor } from "./constants/colors";
+import { useQuery } from "react-query";
+import {
+  addItemToList,
+  checkItem,
+  fetchLists,
+  renameItem,
+  uncheckItem,
+} from "./backend";
 
 interface Props {
   shoppingListId: string;
@@ -29,60 +38,45 @@ interface Props {
 
 export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
   const dispatch = useDispatch();
-  const { checkedItems, uncheckedItems, setCurrentItem } = useOrder(
-    useSelector(selectItems(shoppingListId))
-  );
+  const { data, isLoading, refetch } = useQuery("lists", fetchLists);
+
+  const items = Object.values(data[shoppingListId]?.items ?? {});
 
   const [newItemName, setNewItemName] = useState("");
 
-  const addNewItem = () => {
+  const addNewItem = async () => {
     const newItemId = uuid();
-    dispatch(
-      addItem({
-        shoppingListId: shoppingListId,
-        itemId: newItemId,
-        item: { name: newItemName, id: newItemId, checked: false },
-      })
-    );
+    await addItemToList(shoppingListId, newItemId, newItemName);
+    await refetch();
     setNewItemName("");
   };
 
-  if (checkedItems === undefined) {
-    return <Text>No such shopping list</Text>;
+  if (isLoading) {
+    return <ActivityIndicator />;
   }
-
-  const allItems = uncheckedItems.concat(checkedItems);
 
   return (
     <>
       <FlatList<Item>
-        data={allItems}
+        data={items}
+        keyboardDismissMode={"on-drag"}
         style={{ backgroundColor: "white" }}
         contentContainerStyle={{ alignItems: "stretch", paddingHorizontal: 10 }}
         renderItem={({ item }) => (
           <ListItem
             key={item.id}
             checked={item.checked}
-            onChange={() => {
-              dispatch(
-                toggleItem({
-                  shoppingListId: shoppingListId,
-                  itemId: item.id,
-                })
-              );
-              setCurrentItem(item.name);
+            onChange={async () => {
+              if (item.checked) {
+                await uncheckItem(shoppingListId, item.id);
+              } else {
+                await checkItem(shoppingListId, item.id);
+              }
+              await refetch();
             }}
             name={item.name}
-            onNameChange={(name: string) => {
-              dispatch(
-                updateItem({
-                  shoppingListId: shoppingListId,
-                  itemId: item.id,
-                  item: {
-                    name,
-                  },
-                })
-              );
+            onNameChange={async (name: string) => {
+              await renameItem(shoppingListId, item.id, name);
             }}
             onRemove={() => {
               dispatch(
@@ -91,7 +85,6 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
                   itemId: item.id,
                 })
               );
-              setCurrentItem(item.name);
             }}
           />
         )}

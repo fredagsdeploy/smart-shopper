@@ -1,25 +1,27 @@
 import React from "react";
 import styled from "styled-components/native";
-import { useSelector } from "react-redux";
-import { selectShoppingLists, ShoppingList } from "../reducers/shoppingLists";
-import _, { take } from "lodash";
-import { FlatList, View, Text } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { ShoppingList } from "../reducers/shoppingLists";
+import { take } from "lodash";
+import { ActivityIndicator, Alert, FlatList, Text, View } from "react-native";
+import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { FontAwesome5 } from "@expo/vector-icons";
 import { backgroundColor } from "../constants/colors";
+import { useQuery } from "react-query";
+import { createList, fetchLists, List } from "../backend";
+import { v4 as uuid } from "react-native-uuid";
 
 export const ShoppingListsPage = () => {
-  const shoppingLists = useSelector(selectShoppingLists);
-  const shoppingListsOrderedByModified = _.orderBy(
-    Object.values(shoppingLists),
-    "createdAt",
-    "desc"
-  );
+  const { data, isLoading, refetch } = useQuery("lists", fetchLists);
 
   const navigation = useNavigation();
 
-  const items = shoppingListsOrderedByModified.concat([0]);
+  const lists = Object.values(data ?? {});
+
+  const items = lists.length > 0 ? lists.concat([0]) : lists;
+
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
 
   return (
     <Container>
@@ -32,7 +34,18 @@ export const ShoppingListsPage = () => {
           }}
         >
           <Header>Lists</Header>
-          <AddBtn onPress={() => {}}>
+          <AddBtn
+            onPress={() =>
+              Alert.prompt(
+                "Add new list",
+                "Enter name for new list",
+                async (listName) => {
+                  await createList(uuid(), listName);
+                  await refetch();
+                }
+              )
+            }
+          >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <FontAwesome5 name="plus" size={20} color="white" />
               <View style={{ width: 10 }} />
@@ -43,8 +56,10 @@ export const ShoppingListsPage = () => {
           </AddBtn>
         </View>
 
-        <FlatList<ShoppingList | 0>
+        <FlatList<List | 0>
           data={items}
+          keyboardDismissMode={"on-drag"}
+          ListEmptyComponent={<Text>You have no lists</Text>}
           columnWrapperStyle={{ marginVertical: 10 }}
           numColumns={2}
           renderItem={({ item: shoppingList, index }) => {
@@ -62,6 +77,8 @@ export const ShoppingListsPage = () => {
               );
             }
 
+            const items = shoppingList.items ?? {};
+
             return (
               <ListPreview
                 key={shoppingList.id}
@@ -74,35 +91,30 @@ export const ShoppingListsPage = () => {
                 }}
               >
                 <View>
-                  {take(Object.values(shoppingList.items), 4).map(
-                    (listItem, i) => (
-                      <View key={listItem.id}>
-                        {Object.values(shoppingList.items).length > 4 &&
-                        i === 3 ? (
-                          <View style={{ flexDirection: "row" }}>
-                            <View style={{ width: 20, marginRight: 5 }} />
-                            <ListItemText>{"…"}</ListItemText>
-                          </View>
-                        ) : (
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Feather
-                              name={
-                                listItem.checked ? "check-square" : "square"
-                              }
-                              size={20}
-                              style={{ marginTop: 2, marginRight: 5 }}
-                            />
-                            <ListItemText>{listItem.name}</ListItemText>
-                          </View>
-                        )}
-                      </View>
-                    )
-                  )}
+                  {take(Object.values(items), 4).map((listItem, i) => (
+                    <View key={listItem.id}>
+                      {Object.values(items).length > 4 && i === 3 ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <View style={{ width: 20, marginRight: 5 }} />
+                          <ListItemText>{"…"}</ListItemText>
+                        </View>
+                      ) : (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Feather
+                            name={listItem.checked ? "check-square" : "square"}
+                            size={20}
+                            style={{ marginTop: 2, marginRight: 5 }}
+                          />
+                          <ListItemText>{listItem.name}</ListItemText>
+                        </View>
+                      )}
+                    </View>
+                  ))}
                 </View>
               </ListPreview>
             );

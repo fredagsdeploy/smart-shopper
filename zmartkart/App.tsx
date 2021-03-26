@@ -10,12 +10,17 @@ import { Provider, useDispatch } from "react-redux";
 import { store } from "./src/reducers/store";
 import { fetchItemGraph } from "./src/backend";
 import { setGraph } from "./src/reducers/itemGraph";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const client = new QueryClient();
 
 export default function App() {
   return (
-    <Provider store={store}>
-      <NewApp />
-    </Provider>
+    <QueryClientProvider client={client}>
+      <Provider store={store}>
+        <NewApp />
+      </Provider>
+    </QueryClientProvider>
   );
 }
 

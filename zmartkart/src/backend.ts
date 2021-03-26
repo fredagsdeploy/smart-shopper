@@ -1,5 +1,6 @@
 import { CheckedUncheckedEvent, ItemGraph } from "./types";
 import { Err, Ok, Result } from "./result";
+import { ItemId, ListId, StoreId } from "../../backend/src/types/listEvents";
 
 const hostname = "window.location.host";
 const eventApiUrl = `https://${hostname}/eventApi/telegraf`;
@@ -41,6 +42,7 @@ async function fetchWithException<T>(
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "no-store",
+        Cookie: cookie,
       },
       ...options,
     });
@@ -95,4 +97,120 @@ export const postCheckUncheckEvent = (event: CheckedUncheckedEvent) => {
     .catch((error) => console.log("error", error));
 };
 
+const cookie = "put real auth token here...";
+
 export const fetchItemGraph = () => fetchWithException<ItemGraph>(apiUrl);
+
+export interface ListItem {
+  id: ItemId;
+  name: string;
+  checked: boolean;
+}
+
+export interface List {
+  name: string;
+  id: ListId;
+  storeId: StoreId;
+  items: Record<ItemId, ListItem>;
+}
+
+export const fetchLists = () =>
+  fetch("http://localhost:4180/api/lists", {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      Cookie: cookie,
+    },
+  }).then((r) => r.json());
+
+export const addItemToList = (listId: string, itemId: string, name: string) =>
+  fetch("http://localhost:4180/api/itemEvent", {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      Cookie: cookie,
+    },
+    method: "POST",
+    body: JSON.stringify({
+      type: "appendItemToList",
+      payload: {
+        listId,
+        item: {
+          id: itemId,
+          name,
+        },
+      },
+    }),
+  });
+
+export const checkItem = (listId: string, itemId: string) =>
+  fetch("http://localhost:4180/api/itemEvent", {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      Cookie: cookie,
+    },
+    method: "POST",
+    body: JSON.stringify({
+      type: "checkItem",
+      payload: {
+        listId,
+        itemId,
+      },
+    }),
+  });
+
+export const uncheckItem = (listId: string, itemId: string) =>
+  fetch("http://localhost:4180/api/itemEvent", {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      Cookie: cookie,
+    },
+    method: "POST",
+    body: JSON.stringify({
+      type: "uncheckItem",
+      payload: {
+        listId,
+        itemId,
+      },
+    }),
+  });
+
+export const createList = (listId: string, name: string) =>
+  fetch("http://localhost:4180/api/itemEvent", {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      Cookie: cookie,
+    },
+    method: "POST",
+    body: JSON.stringify({
+      type: "createList",
+      payload: {
+        storeId: "Maxi",
+        listId,
+        name,
+      },
+    }),
+  });
+
+export const renameItem = (listId: string, itemId: string, name: string) =>
+  fetch("http://localhost:4180/api/itemEvent", {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      Cookie: cookie,
+    },
+    method: "POST",
+    body: JSON.stringify({
+      type: "renameItem",
+      payload: {
+        listId,
+        item: {
+          id: itemId,
+          name,
+        },
+      },
+    }),
+  });

@@ -11,6 +11,7 @@ export const ListPage = () => {
   const {
     params: { shoppingListId },
   } = useRoute<ProfileScreenRouteProp>();
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor }}>
       <SmartShoppingList shoppingListId={shoppingListId} />

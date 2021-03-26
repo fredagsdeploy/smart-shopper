@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components/native";
-import { debounce } from "lodash";
 import { TextInput, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
@@ -21,11 +20,8 @@ export const ListItem: React.VFC<Props> = ({
 }) => {
   const [_name, setName] = useState(name);
 
-  const debouncedUpdate = debounce(onNameChange, 500);
-
   const handleChange = (text: string) => {
     setName(text);
-    debouncedUpdate(text);
   };
 
   return (
@@ -41,6 +37,7 @@ export const ListItem: React.VFC<Props> = ({
         style={{ fontSize: 16 }}
         value={_name}
         onChangeText={handleChange}
+        onSubmitEditing={(event) => onNameChange(event.nativeEvent.text)}
       />
     </Container>
   );
