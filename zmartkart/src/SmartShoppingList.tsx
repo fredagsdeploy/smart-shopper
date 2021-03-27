@@ -40,7 +40,7 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
   const dispatch = useDispatch();
   const { data, isLoading, refetch } = useQuery("lists", fetchLists);
 
-  const items = Object.values(data[shoppingListId]?.items ?? {});
+  const items = Object.values(data?.[shoppingListId]?.items ?? {});
 
   const [newItemName, setNewItemName] = useState("");
 
@@ -96,8 +96,8 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
         <NewItemRow>
           <TextInput
             value={newItemName}
-            onSubmitEditing={() => {
-              addNewItem();
+            onSubmitEditing={async () => {
+              await addNewItem();
             }}
             onChangeText={(value) => {
               setNewItemName(value);

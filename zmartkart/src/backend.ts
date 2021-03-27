@@ -1,12 +1,32 @@
 import { CheckedUncheckedEvent, ItemGraph } from "./types";
 import { Err, Ok, Result } from "./result";
 import { ItemId, ListId, StoreId } from "../../backend/src/types/listEvents";
+import * as SecureStore from "expo-secure-store";
 
 const hostname = "window.location.host";
 const eventApiUrl = `https://${hostname}/eventApi/telegraf`;
 //const apiUrl = `https://${hostname}/api/`;
 const apiUrl = `https://smartcart.tejpb.it/api/`;
 const authString = "";
+
+let accessToken: string | null = null;
+
+export const setAccessToken = (token: string | null): Promise<void> => {
+  accessToken = token;
+  if (token) {
+    return SecureStore.setItemAsync("token", token);
+  } else {
+    return SecureStore.deleteItemAsync("token");
+  }
+};
+
+export const getAccessToken = async (): Promise<string | null> => {
+  if (!accessToken) {
+    accessToken = await SecureStore.getItemAsync("token");
+  }
+
+  return accessToken;
+};
 
 class ApiResponse<T> {
   status: number;
@@ -42,7 +62,6 @@ async function fetchWithException<T>(
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "no-store",
-        Cookie: cookie,
       },
       ...options,
     });
@@ -97,8 +116,6 @@ export const postCheckUncheckEvent = (event: CheckedUncheckedEvent) => {
     .catch((error) => console.log("error", error));
 };
 
-const cookie = "put real auth token here...";
-
 export const fetchItemGraph = () => fetchWithException<ItemGraph>(apiUrl);
 
 export interface ListItem {
@@ -114,103 +131,67 @@ export interface List {
   items: Record<ItemId, ListItem>;
 }
 
-export const fetchLists = () =>
-  fetch("http://localhost:4180/api/lists", {
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-store",
-      Cookie: cookie,
-    },
-  }).then((r) => r.json());
+export const fetchLists = async () => {
+  const token = await getAccessToken();
 
-export const addItemToList = (listId: string, itemId: string, name: string) =>
-  fetch("http://localhost:4180/api/itemEvent", {
+  return fetch("http://localhost:4180/api/lists", {
     headers: {
       "Content-Type": "application/json",
       "Cache-Control": "no-store",
-      Cookie: cookie,
+      Authorization: "Bearer " + token,
+    },
+  }).then<Record<ListId, List>>((r) => r.json());
+};
+
+export const postItemEvent = async (type: string, payload: object) => {
+  const token = await getAccessToken();
+  return fetch("http://localhost:4180/api/itemEvent", {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      Authorization: "Bearer " + token,
     },
     method: "POST",
     body: JSON.stringify({
-      type: "appendItemToList",
-      payload: {
-        listId,
-        item: {
-          id: itemId,
-          name,
-        },
-      },
+      type,
+      payload,
     }),
+  });
+};
+
+export const addItemToList = (listId: string, itemId: string, name: string) =>
+  postItemEvent("appendItemToList", {
+    listId,
+    item: {
+      id: itemId,
+      name,
+    },
   });
 
 export const checkItem = (listId: string, itemId: string) =>
-  fetch("http://localhost:4180/api/itemEvent", {
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-store",
-      Cookie: cookie,
-    },
-    method: "POST",
-    body: JSON.stringify({
-      type: "checkItem",
-      payload: {
-        listId,
-        itemId,
-      },
-    }),
+  postItemEvent("checkItem", {
+    listId,
+    itemId,
   });
 
 export const uncheckItem = (listId: string, itemId: string) =>
-  fetch("http://localhost:4180/api/itemEvent", {
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-store",
-      Cookie: cookie,
-    },
-    method: "POST",
-    body: JSON.stringify({
-      type: "uncheckItem",
-      payload: {
-        listId,
-        itemId,
-      },
-    }),
+  postItemEvent("uncheckItem", {
+    listId,
+    itemId,
   });
 
 export const createList = (listId: string, name: string) =>
-  fetch("http://localhost:4180/api/itemEvent", {
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-store",
-      Cookie: cookie,
-    },
-    method: "POST",
-    body: JSON.stringify({
-      type: "createList",
-      payload: {
-        storeId: "Maxi",
-        listId,
-        name,
-      },
-    }),
+  postItemEvent("createList", {
+    storeId: "Maxi",
+    listId,
+    name,
   });
 
 export const renameItem = (listId: string, itemId: string, name: string) =>
-  fetch("http://localhost:4180/api/itemEvent", {
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-store",
-      Cookie: cookie,
+  postItemEvent("renameItem", {
+    listId,
+    item: {
+      id: itemId,
+      name,
     },
-    method: "POST",
-    body: JSON.stringify({
-      type: "renameItem",
-      payload: {
-        listId,
-        item: {
-          id: itemId,
-          name,
-        },
-      },
-    }),
   });

@@ -1,60 +1,33 @@
-import React, { useState } from "react";
-import { StatusBar, Text, TextInput, TouchableHighlight, View } from "react-native";
+import React from "react";
+import { StatusBar, Text, TouchableHighlight, View } from "react-native";
 import styled from "styled-components/native";
-import { useNavigation } from "@react-navigation/native";
+import * as Google from "expo-google-app-auth";
+import { setAccessToken } from "./backend";
+import { FontAwesome } from "@expo/vector-icons";
+import { backgroundColor } from "./constants/colors";
 
 const fontSize = 16;
 
-export const SignIn = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export const SignIn = ({ onSignIn }: { onSignIn: () => void }) => {
+  const signIn = async () => {
+    const result = await Google.logInAsync({
+      iosClientId:
+        "73488926457-lgc68tu3558a6kbh4iuf7p2i7co90mhf.apps.googleusercontent.com",
+    });
 
-  const navigation = useNavigation();
-
-  const signIn = () => {
-    navigation.navigate("Root");
+    if (result.type === "success") {
+      console.log("success", result.idToken);
+      await setAccessToken(result.idToken);
+      onSignIn();
+    }
   };
-
 
   return (
     <Background>
       <StatusBar barStyle={"light-content"} />
       <Form>
-        <Header>Sign In</Header>
-        <View style={{ height: 32 }}/>
-        <Text
-          style={{
-            fontSize,
-            fontWeight: "700",
-            color: "white",
-            paddingVertical: 4,
-          }}
-        >
-          E-mail
-        </Text>
-        <LoginField
-          autoCompleteType={"email"}
-          keyboardType={"email-address"}
-          value={email}
-          onChangeText={(v) => setEmail(v)}
-        />
-        <View style={{ height: 32 }}/>
-        <Text
-          style={{
-            fontSize,
-            fontWeight: "700",
-            color: "white",
-            paddingVertical: 4,
-          }}
-        >
-          Password
-        </Text>
-        <LoginField
-          secureTextEntry
-          value={password}
-          onChangeText={(v) => setPassword(v)}
-        />
-        <View style={{ height: 32 }}/>
+        <Header>Smartshopper</Header>
+        <View style={{ height: 32 }} />
         <TouchableHighlight
           style={{
             backgroundColor: "white",
@@ -62,18 +35,28 @@ export const SignIn = () => {
             justifyContent: "center",
             borderRadius: 4,
           }}
+          underlayColor={"#e2e2e2"}
           onPress={signIn}
         >
-          <Text
+          <View
             style={{
-              color: "#fc3c49",
-              padding: fontSize,
-              fontSize: 18,
-              fontWeight: "700",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            Sign in
-          </Text>
+            <FontAwesome name="google" size={24} color={backgroundColor} />
+            <Text
+              style={{
+                color: backgroundColor,
+                padding: fontSize,
+                fontSize: 18,
+                fontWeight: "700",
+              }}
+            >
+              Sign in with Google
+            </Text>
+          </View>
         </TouchableHighlight>
       </Form>
     </Background>
@@ -87,7 +70,7 @@ const LoginField = styled.TextInput`
   padding: ${fontSize}px;
   font-size: ${fontSize}px;
   font-weight: 700;
-`
+`;
 
 const Background = styled.SafeAreaView`
   background: #fc3c49;
@@ -98,6 +81,7 @@ const Background = styled.SafeAreaView`
 const Header = styled.Text`
   font-size: 36px;
   font-weight: 700;
+  font-family: "ChalkboardSE-Light";
   color: white;
 `;
 

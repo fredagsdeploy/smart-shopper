@@ -2,6 +2,7 @@ import React from "react";
 import { SmartShoppingList } from "./SmartShoppingList";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { BottomTabParamList } from "../route-types";
 import { backgroundColor } from "./constants/colors";
 

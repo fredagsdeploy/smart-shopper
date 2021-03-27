@@ -3,6 +3,7 @@ import styled from "styled-components/native";
 import { ShoppingList } from "../reducers/shoppingLists";
 import { take } from "lodash";
 import { ActivityIndicator, Alert, FlatList, Text, View } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { backgroundColor } from "../constants/colors";
@@ -17,7 +18,7 @@ export const ShoppingListsPage = () => {
 
   const lists = Object.values(data ?? {});
 
-  const items = lists.length > 0 ? lists.concat([0]) : lists;
+  const items = lists.length > 0 ? [...lists, null] : lists;
 
   if (isLoading) {
     return <ActivityIndicator />;
@@ -25,6 +26,7 @@ export const ShoppingListsPage = () => {
 
   return (
     <Container>
+      <StatusBar style={"dark"} />
       <Indent>
         <View
           style={{
@@ -35,6 +37,7 @@ export const ShoppingListsPage = () => {
         >
           <Header>Lists</Header>
           <AddBtn
+            underlayColor={"#802a2d"}
             onPress={() =>
               Alert.prompt(
                 "Add new list",
@@ -56,7 +59,7 @@ export const ShoppingListsPage = () => {
           </AddBtn>
         </View>
 
-        <FlatList<List | 0>
+        <FlatList<List | null>
           data={items}
           keyboardDismissMode={"on-drag"}
           ListEmptyComponent={<Text>You have no lists</Text>}
