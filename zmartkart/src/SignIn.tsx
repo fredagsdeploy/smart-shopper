@@ -1,5 +1,11 @@
 import React from "react";
-import { StatusBar, Text, TouchableHighlight, View } from "react-native";
+import {
+  Platform,
+  StatusBar,
+  Text,
+  TouchableHighlight,
+  View,
+} from "react-native";
 import styled from "styled-components/native";
 import * as Google from "expo-google-app-auth";
 import { setAccessToken } from "./backend";
@@ -83,7 +89,7 @@ const Background = styled.SafeAreaView`
 const Header = styled.Text`
   font-size: 36px;
   font-weight: 700;
-  font-family: ${Platform.select({android: "Roboto", ios: "ChalkboardSE-Light"})};
+  font-family: ChalkboardSE-Light, Roboto, sans-serif;
   color: white;
 `;
 

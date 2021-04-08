@@ -2,6 +2,7 @@ import { CheckedUncheckedEvent, ItemGraph } from "./types";
 import { Err, Ok, Result } from "./result";
 import { ItemId, ListId, StoreId } from "../../backend/src/types/listEvents";
 import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 
 const hostname = "window.location.host";
 const eventApiUrl = `https://${hostname}/eventApi/telegraf`;
@@ -11,8 +12,12 @@ const authString = "";
 
 let accessToken: string | null = null;
 
-export const setAccessToken = (token: string | null): Promise<void> => {
+export const setAccessToken = async (token: string | null): Promise<void> => {
   accessToken = token;
+  if (Platform.OS === "web") {
+    return;
+  }
+
   if (token) {
     return SecureStore.setItemAsync("token", token);
   } else {
@@ -21,6 +26,10 @@ export const setAccessToken = (token: string | null): Promise<void> => {
 };
 
 export const getAccessToken = async (): Promise<string | null> => {
+  if (Platform.OS === "web") {
+    return "web";
+  }
+
   if (!accessToken) {
     accessToken = await SecureStore.getItemAsync("token");
   }
