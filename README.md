@@ -12,20 +12,20 @@ curl -X POST http://localhost:8083/connectors \
     -d @neo4j-kafka-sink-connector.json
 ```
 
-To test-publish addNode event:
+To test-publish checkItem event:
 
 ```shell
-kafkacat -P -b localhost:9092 -t addNode -l -D "\n" nodeData.json
+kafkacat -P -b localhost:9092 -t checkItem -l -D "\n" checkItem.json
 ```
 
-To test-publish addEdge event:
+To test-publish uncheckItem event:
 
 ```shell
-kafkacat -P -b localhost:9092 -t addEdge edgeData.json
+kafkacat -P -b localhost:9092 -t uncheckItem -l -D "\n" uncheckItem.json
 ```
 
 Visit [http://localhost:7474/browser/](http://localhost:7474/browser/), select "No authentication". In the repl, write:
 
 ```cypher
-MATCH p = (:Food) return p
+MATCH p = (:Item) return p
 ```

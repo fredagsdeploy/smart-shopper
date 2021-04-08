@@ -1,6 +1,4 @@
-{
-  "previousFood": "Vin",
-  "checkedFood": "Öl",
-  "storeName": "ICA Maxi",
-  "userId": "115646818689177376948"
-}
+{"from": "Vin", "to": "Öl", "storeName": "ICA Maxi", "userId": "115646818689177376948"}
+{"from": "Öl", "to": "Mjöd", "storeName": "ICA Maxi", "userId": "115646818689177376948"}
+{"from": "Mjöd", "to": "Cider", "storeName": "ICA Maxi", "userId": "115646818689177376948"}
+{"from": "Cider", "to": "Mjölk", "storeName": "ICA Maxi", "userId": "115646818689177376948"}
