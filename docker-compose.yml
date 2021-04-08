@@ -178,6 +178,7 @@ services:
       - "8080:8080"
     volumes:
       - ./backend/src:/app/src
+      - ./backend/node_modules:/app/node_modules
       - ./backend/.env:/app/.env
   neo4j:
     image: neo4j:4.2
@@ -194,4 +195,3 @@ services:
       NEO4J_dbms_memory_heap_max__size: 8G
 volumes:
   neo4j-data: {}
-

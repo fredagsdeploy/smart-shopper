@@ -1,3 +1,4 @@
+require("dotenv").config();
 import { Err, Ok, Result } from "./types/result";
 import { ItemId, ListEvent, ListId, StoreId, UserId } from "./types/listEvents";
 import express, { Request } from "express";
@@ -7,8 +8,7 @@ import produce from "immer";
 import kafka from "kafka-node";
 
 import bodyParser from "body-parser";
-
-require("dotenv").config();
+import { StoreName } from "./types/queries";
 
 const { Producer, Consumer } = kafka;
 const client = new kafka.KafkaClient({ kafkaHost: "tejpb.it:9092" });
@@ -148,10 +148,36 @@ const app = express();
 const port = 8080;
 app.get(
   "/api",
-  async (
-    req: Request<unknown, unknown, unknown, { storeName: string }>,
-    res
-  ) => {
+  async (req: Request<unknown, unknown, unknown, StoreName>, res) => {
+    try {
+      const userId = req.header("X-Forwarded-User")!;
+      const email = req.header("X-Forwarded-Email");
+
+      const storeName = req.query.storeName;
+
+      if (!storeName) {
+        res.status(400).send({ error: "Missing storeName" });
+        return;
+      }
+
+      const graph = await generateItemGraph(storeName, userId);
+      res.send({ hello: "world", userId, email, graph: graph });
+    } catch (error) {
+      res.status(500).send({ error });
+    }
+  }
+);
+
+app.post(
+  "/api/itemEvent",
+  async (req: Request<unknown, unknown, ListEvent, StoreName>, res) => {
+    if (!producerReady) {
+      res
+        .status(503)
+        .send({ error: producerError ?? "Event producer not ready" });
+      return;
+    }
+
     const userId = req.header("X-Forwarded-User")!;
     const email = req.header("X-Forwarded-Email");
 
@@ -163,7 +189,7 @@ app.get(
     }
 
     const graph = await generateItemGraph(storeName, userId);
-    res.send({ hello: "world", userId, email, graph: graph });
+    res.send({ userId, email, graph: graph });
   }
 );
 
@@ -173,7 +199,7 @@ app.get("/api/lists", async (req, res) => {
 });
 
 app.post(
-  "/api/itemEvent",
+  "/api/listEvent",
   bodyParser.json(),
   async (
     req: Request<unknown, Result<{ ok: boolean }, string>, ListEvent>,
