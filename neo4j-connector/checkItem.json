@@ -1,6 +1,6 @@
 {
-  "fromFood": "Vin",
-  "toFood": "Öl",
+  "previousFood": "Vin",
+  "checkedFood": "Öl",
   "storeName": "ICA Maxi",
   "userId": "115646818689177376948"
 }
