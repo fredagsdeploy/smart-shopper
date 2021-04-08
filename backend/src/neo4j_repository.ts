@@ -29,13 +29,13 @@ export const generateItemGraph = async (
     console.log(record)
     console.log(record.get("r").properties)
 
-    let first_food = record.get("to").properties.name
-    let second_food = record.get("from").properties.name
+    let first = record.get("to").properties.name
+    let second = record.get("from").properties.name
     let gravity = record.get("r").properties.gravity.toInt()
 
-    newGraph[first_food] = increaseEdgeScore(
-      newGraph[second_food] ?? [],
-      second_food,
+    newGraph[first] = increaseEdgeScore(
+      newGraph[second] ?? [],
+      second,
       gravity
     );
   });
