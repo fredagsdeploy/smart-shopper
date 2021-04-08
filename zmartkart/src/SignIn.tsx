@@ -13,6 +13,8 @@ export const SignIn = ({ onSignIn }: { onSignIn: () => void }) => {
     const result = await Google.logInAsync({
       iosClientId:
         "73488926457-lgc68tu3558a6kbh4iuf7p2i7co90mhf.apps.googleusercontent.com",
+      androidClientId:
+        "73488926457-ecdu70s6efetsudrquol79acuf94pivj.apps.googleusercontent.com",
     });
 
     if (result.type === "success") {
