@@ -57,11 +57,13 @@ async function fetchWithException<T>(
   url: RequestInfo,
   options?: RequestInit
 ): Promise<Result<ApiResponse<T>, ApiResponse<ApiError>>> {
+  const token = await getAccessToken();
   try {
     const resp = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "no-store",
+        Authorization: "Bearer " + token,
       },
       ...options,
     });
@@ -92,7 +94,7 @@ async function populateReponse<T>(
       const jsonResp = JSON.parse(message);
       apiResponse = apiResponse.setJson(jsonResp);
     } catch (error) {
-      console.log("Couldn't parse json from backend", error, resp.body);
+      console.log("Couldn't parse json from backend", error, message);
     }
   } catch (error) {
     console.log("Couldn't get text from request", error, resp.body);
@@ -134,7 +136,7 @@ export interface List {
 export const fetchLists = async () => {
   const token = await getAccessToken();
 
-  return fetch("http://localhost:4180/api/lists", {
+  return fetch(`${apiUrl}/lists`, {
     headers: {
       "Content-Type": "application/json",
       "Cache-Control": "no-store",
@@ -145,7 +147,7 @@ export const fetchLists = async () => {
 
 export const postItemEvent = async (type: string, payload: object) => {
   const token = await getAccessToken();
-  return fetch("http://localhost:4180/api/itemEvent", {
+  return fetch(`${apiUrl}/listEvent`, {
     headers: {
       "Content-Type": "application/json",
       "Cache-Control": "no-store",
@@ -168,15 +170,17 @@ export const addItemToList = (listId: string, itemId: string, name: string) =>
     },
   });
 
-export const checkItem = (listId: string, itemId: string) =>
+export const checkItem = (listId: string, storeId: string, itemId: string) =>
   postItemEvent("checkItem", {
     listId,
+    storeId,
     itemId,
   });
 
-export const uncheckItem = (listId: string, itemId: string) =>
+export const uncheckItem = (listId: string, storeId: string, itemId: string) =>
   postItemEvent("uncheckItem", {
     listId,
+    storeId,
     itemId,
   });
 

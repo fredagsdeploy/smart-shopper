@@ -40,7 +40,8 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
   const dispatch = useDispatch();
   const { data, isLoading, refetch } = useQuery("lists", fetchLists);
 
-  const items = Object.values(data?.[shoppingListId]?.items ?? {});
+  const list = data?.[shoppingListId];
+  const items = Object.values(list?.items ?? {});
 
   const [newItemName, setNewItemName] = useState("");
 
@@ -53,6 +54,10 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
 
   if (isLoading) {
     return <ActivityIndicator />;
+  }
+
+  if (!list) {
+    return <Text>No such list</Text>;
   }
 
   return (
@@ -68,9 +73,9 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
             checked={item.checked}
             onChange={async () => {
               if (item.checked) {
-                await uncheckItem(shoppingListId, item.id);
+                await uncheckItem(shoppingListId, list.storeId, item.id);
               } else {
-                await checkItem(shoppingListId, item.id);
+                await checkItem(shoppingListId, list.storeId, item.id);
               }
               await refetch();
             }}
