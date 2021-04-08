@@ -28,6 +28,8 @@ You don't need docker for this. You do need expo.
 cd frontend && npm install && npm start
 ```
 
+If testing with a local backend you need to edit the apiUrl in the backend file. There's no env for that yet.
+
 Create these folders
 `mkdir -p confluent/{kafka_data,zookeeper,zookeeper_log}`
 
