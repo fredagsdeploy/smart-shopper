@@ -83,7 +83,7 @@ const Background = styled.SafeAreaView`
 const Header = styled.Text`
   font-size: 36px;
   font-weight: 700;
-  font-family: "ChalkboardSE-Light";
+  font-family: ${Platform.select({android: "Roboto", ios: "ChalkboardSE-Light"})};
   color: white;
 `;
 
