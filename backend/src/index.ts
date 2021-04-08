@@ -9,6 +9,7 @@ import kafka from "kafka-node";
 
 import bodyParser from "body-parser";
 import { StoreName } from "./types/queries";
+import { listReducer, ListsByUserId } from "./reducers/listReducer";
 
 const { Producer, Consumer } = kafka;
 const client = new kafka.KafkaClient({ kafkaHost: "tejpb.it:9092" });
@@ -27,98 +28,7 @@ const consumer = new Consumer(
   }
 );
 
-interface ListItem {
-  id: ItemId;
-  name: string;
-  checked: boolean;
-}
-
-interface List {
-  name: string;
-  id: ListId;
-  storeId: StoreId;
-  items: Record<ItemId, ListItem>;
-}
-
-type ListsByUserId = Record<UserId, Record<ListId, List>>;
-
 let listsByUserId: ListsByUserId = {};
-
-const listReducer = (state: ListsByUserId, action: ListEvent): void => {
-  const { userId, listId } = action.payload;
-  if (!state[userId]) {
-    state[userId] = {};
-  }
-
-  switch (action.type) {
-    case "createList": {
-      const { name, storeId } = action.payload;
-
-      if (!state[userId][listId]) {
-        state[userId][listId] = { name, storeId, id: listId, items: {} };
-      }
-      return;
-    }
-    case "moveListToStore": {
-      const { listId, storeId } = action.payload;
-
-      if (state[userId][listId]) {
-        state[userId][listId].storeId = storeId;
-      }
-      return;
-    }
-    case "removeList": {
-      const { listId } = action.payload;
-
-      delete state[userId][listId];
-      return;
-    }
-    case "appendItemToList": {
-      const {
-        item: { name, id },
-      } = action.payload;
-
-      if (state[userId][listId]) {
-        state[userId][listId].items[id] = { id, name, checked: false };
-      }
-      return;
-    }
-
-    case "renameItem": {
-      const {
-        item: { name, id },
-      } = action.payload;
-
-      if (state[userId][listId]?.items[id]) {
-        state[userId][listId].items[id].name = name;
-      }
-      return;
-    }
-    case "checkItem": {
-      const { itemId: id } = action.payload;
-
-      if (state[userId][listId]?.items[id]) {
-        state[userId][listId].items[id].checked = true;
-      }
-      return;
-    }
-    case "uncheckItem": {
-      const { itemId: id } = action.payload;
-
-      if (state[userId][listId]?.items[id]) {
-        state[userId][listId].items[id].checked = false;
-      }
-      return;
-    }
-
-    case "removeItem": {
-      const { itemId: id } = action.payload;
-
-      delete state[userId][listId]?.items[id];
-      return;
-    }
-  }
-};
 
 consumer.on("message", (message) => {
   const action = JSON.parse(message.value.toString()) as ListEvent;
