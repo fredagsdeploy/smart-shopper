@@ -1,11 +1,20 @@
 require("dotenv").config();
 import { Err, Ok, Result } from "./types/result";
-import { ItemId, ListEvent, ListId, StoreId, UserId } from "./types/listEvents";
+import {
+  CheckItem,
+  CreateList,
+  ItemId,
+  ListEvent,
+  ListId,
+  StoreId,
+  UncheckItem,
+  UserId,
+} from "./types/listEvents";
 import express, { Request } from "express";
 import { generateItemGraph } from "./neo4j_repository";
 import produce from "immer";
 
-import kafka from "kafka-node";
+import kafka, { ProduceRequest } from "kafka-node";
 
 import bodyParser from "body-parser";
 import { StoreName } from "./types/queries";
@@ -29,7 +38,6 @@ const consumer = new Consumer(
 );
 
 let listsByUserId: ListsByUserId = {};
-
 consumer.on("message", (message) => {
   const action = JSON.parse(message.value.toString()) as ListEvent;
   listsByUserId = produce(listsByUserId, (draft) => {
@@ -78,31 +86,6 @@ app.get(
   }
 );
 
-app.post(
-  "/api/itemEvent",
-  async (req: Request<unknown, unknown, ListEvent, StoreName>, res) => {
-    if (!producerReady) {
-      res
-        .status(503)
-        .send({ error: producerError ?? "Event producer not ready" });
-      return;
-    }
-
-    const userId = req.header("X-Forwarded-User")!;
-    const email = req.header("X-Forwarded-Email");
-
-    const storeName = req.query.storeName;
-
-    if (!storeName) {
-      res.status(400).send({ error: "Missing storeName" });
-      return;
-    }
-
-    const graph = await generateItemGraph(storeName, userId);
-    res.send({ userId, email, graph: graph });
-  }
-);
-
 app.get("/api/lists", async (req, res) => {
   const userId = req.header("X-Forwarded-User")!;
   res.json(listsByUserId[userId] ?? {});
@@ -128,27 +111,37 @@ app.post(
 
     const event = req.body;
 
+    const eventList: ProduceRequest[] = [];
+
     event.payload.userId = userId;
-
-    producer.send(
-      [
-        {
-          topic: "list",
+    switch (event.type) {
+      case "checkItem":
+      case "uncheckItem":
+        const { topic, message } = formatMessageForNeo4j(listsByUserId, event);
+        eventList.push({
+          topic,
           key: event.payload.listId,
-          messages: [JSON.stringify(event)],
-        },
-      ],
-      (error, data) => {
-        if (error) {
-          console.log("error", error);
+          messages: [JSON.stringify(message)],
+        });
+        break;
+    }
 
-          res.send(new Err("Error!"));
-        } else {
-          console.log("data", data);
-          res.send(new Ok({ ok: true }));
-        }
+    eventList.push({
+      topic: "list",
+      key: event.payload.listId,
+      messages: [JSON.stringify(event)],
+    });
+
+    producer.send(eventList, (error, data) => {
+      if (error) {
+        console.log("error", error);
+
+        res.send(new Err("Error!"));
+      } else {
+        console.log("data", data);
+        res.send(new Ok({ ok: true }));
       }
-    );
+    });
     // handleListEvent(event);
   }
 );
@@ -156,3 +149,27 @@ app.post(
 app.listen(port, () => {
   return console.log(`server is listening on ${port}`);
 });
+
+function formatMessageForNeo4j(
+  listsByUserId: ListsByUserId,
+  event: CheckItem | UncheckItem
+) {
+  const from =
+    listsByUserId[event.payload.userId][event.payload.listId].lastCheckedItem;
+  return {
+    topic: event.type,
+    message:
+      event.type === "checkItem"
+        ? {
+            from,
+            to: event.payload.itemId,
+            storeName: event.payload.storeId,
+            userId: event.payload.userId,
+          }
+        : {
+            unchecked: event.payload.itemId,
+            storeName: event.payload.storeId,
+            userId: event.payload.userId,
+          },
+  };
+}

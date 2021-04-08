@@ -69,6 +69,7 @@ export interface CheckItem {
   type: "checkItem";
   payload: {
     listId: ListId;
+    storeId: StoreId;
     userId: UserId;
     itemId: ItemId;
   };
@@ -78,6 +79,7 @@ export interface UncheckItem {
   type: "uncheckItem";
   payload: {
     listId: ListId;
+    storeId: StoreId;
     userId: UserId;
     itemId: ItemId;
   };

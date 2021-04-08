@@ -6,6 +6,8 @@ import {
   UserId,
 } from "../types/listEvents";
 
+export const INITIAL_CHECKED_ITEM = "@@START@@";
+
 export interface ListItem {
   id: ItemId;
   name: string;
@@ -17,6 +19,7 @@ export interface List {
   id: ListId;
   storeId: StoreId;
   items: Record<ItemId, ListItem>;
+  lastCheckedItem: ItemId;
 }
 
 export type ListsByUserId = Record<UserId, Record<ListId, List>>;
@@ -32,7 +35,13 @@ export const listReducer = (state: ListsByUserId, action: ListEvent): void => {
       const { name, storeId } = action.payload;
 
       if (!state[userId][listId]) {
-        state[userId][listId] = { name, storeId, id: listId, items: {} };
+        state[userId][listId] = {
+          name,
+          storeId,
+          id: listId,
+          items: {},
+          lastCheckedItem: INITIAL_CHECKED_ITEM,
+        };
       }
       return;
     }
@@ -75,6 +84,7 @@ export const listReducer = (state: ListsByUserId, action: ListEvent): void => {
       const { itemId: id } = action.payload;
 
       if (state[userId][listId]?.items[id]) {
+        state[userId][listId].lastCheckedItem = id;
         state[userId][listId].items[id].checked = true;
       }
       return;
@@ -83,6 +93,7 @@ export const listReducer = (state: ListsByUserId, action: ListEvent): void => {
       const { itemId: id } = action.payload;
 
       if (state[userId][listId]?.items[id]) {
+        state[userId][listId].lastCheckedItem = INITIAL_CHECKED_ITEM;
         state[userId][listId].items[id].checked = false;
       }
       return;
