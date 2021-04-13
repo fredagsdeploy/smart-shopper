@@ -12,6 +12,13 @@ import { createList, fetchLists, List } from "../backend";
 import { v4 as uuid } from "react-native-uuid";
 import Dialog from "react-native-dialog";
 
+const cutIfListNameIsTooLong = (listName: string) => {
+  if (listName.length > 9) {
+    return take(listName, 9).join("") + "...";
+  }
+  return listName;
+};
+
 export const ShoppingListsPage = () => {
   const { data, isLoading, refetch } = useQuery("lists", fetchLists);
 
@@ -105,6 +112,11 @@ export const ShoppingListsPage = () => {
                 }}
               >
                 <View>
+                  <ListNameTextContainer>
+                    <ListNameText>
+                      {cutIfListNameIsTooLong(shoppingList.name)}
+                    </ListNameText>
+                  </ListNameTextContainer>
                   {take(Object.values(items), 4).map((listItem, i) => (
                     <View key={listItem.id}>
                       {Object.values(items).length > 4 && i === 3 ? (
@@ -138,6 +150,23 @@ export const ShoppingListsPage = () => {
     </Container>
   );
 };
+
+const ListNameTextContainer = styled.View`
+  border-radius: 10;
+  border-width: 1;
+  border-color: white;
+  margin-top: -19;
+  background: white;
+  align-self: flex-end;
+  padding-left: 10px;
+  padding-right: 10px;
+`;
+
+const ListNameText = styled.Text`
+  margin-left: auto;
+  color: grey;
+  text-align: right;
+`;
 
 const ListItemText = styled.Text`
   margin: 5px 0;
