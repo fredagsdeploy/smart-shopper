@@ -25,7 +25,7 @@ docker-compose up oauth
 You don't need docker for this. You do need expo.
 
 ```
-cd frontend && npm install && npm start
+cd zmartkart && npm install && npm start
 ```
 
 If testing with a local backend you need to edit the apiUrl in the backend file. There's no env for that yet.
