@@ -91,7 +91,6 @@ app.get(
   async (req: Request<unknown, unknown, unknown, ShoppingListIdParam>, res) => {
     try {
       const userId = req.header("X-Forwarded-User")!;
-      const email = req.header("X-Forwarded-Email");
 
       const listId = req.query.shoppingListId;
 
