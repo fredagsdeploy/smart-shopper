@@ -89,7 +89,7 @@ const Background = styled.SafeAreaView`
 const Header = styled.Text`
   font-size: 36px;
   font-weight: 700;
-  font-family: ChalkboardSE-Light, Roboto, sans-serif;
+  font-family: ${Platform.OS === "ios" ? "ChalkboardSE-Light" : "Roboto"};
   color: white;
 `;
 
