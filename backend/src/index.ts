@@ -17,7 +17,7 @@ import produce from "immer";
 import kafka, { ProduceRequest } from "kafka-node";
 
 import bodyParser from "body-parser";
-import { StoreName } from "./types/queries";
+import { ShoppingListIdParam, StoreName } from "./types/queries";
 import { listReducer, ListsByUserId } from "./reducers/listReducer";
 
 const { Producer, Consumer } = kafka;
@@ -80,6 +80,41 @@ app.get(
 
       const graph = await generateItemGraph(storeName, userId);
       res.send({ hello: "world", userId, email, graph: graph });
+    } catch (error) {
+      res.status(500).send({ error });
+    }
+  }
+);
+
+app.get(
+  "/api/graph",
+  async (req: Request<unknown, unknown, unknown, ShoppingListIdParam>, res) => {
+    try {
+      const userId = req.header("X-Forwarded-User")!;
+      const email = req.header("X-Forwarded-Email");
+
+      const listId = req.query.shoppingListId;
+
+      if (!listId) {
+        res.status(400).send({ error: "Missing shoppingListId param" });
+        return;
+      }
+
+      const list = listsByUserId[userId][listId];
+
+      if (!list) {
+        res.status(400).send({ error: "No list with that id" });
+        return;
+      }
+
+      if (!list.storeId) {
+        // Should be an invalid state for a list, But lets check it anyways.
+        res.status(400).send({ error: "No store id for shopping list" });
+        return;
+      }
+
+      const graph = await generateItemGraph(list.storeId, userId);
+      res.send({ graph });
     } catch (error) {
       res.status(500).send({ error });
     }
