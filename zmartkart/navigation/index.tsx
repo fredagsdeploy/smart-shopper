@@ -9,7 +9,7 @@ import { ActivityIndicator, ColorSchemeName } from "react-native";
 
 import NotFoundScreen from "../screens/NotFoundScreen";
 import { RootStackParamList } from "../route-types";
-import BottomTabNavigator from "./BottomTabNavigator";
+import StackNavigator from "./StackNavigator";
 import LinkingConfiguration from "./LinkingConfiguration";
 import { SignIn } from "../src/SignIn";
 import { useQuery } from "react-query";
@@ -18,11 +18,10 @@ import { getAccessToken } from "../src/backend";
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 export function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+  let theme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
+  theme.colors.card = "#f76361";
   return (
-    <NavigationContainer
-      linking={LinkingConfiguration}
-      theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-    >
+    <NavigationContainer linking={LinkingConfiguration} theme={theme}>
       <RootNavigator />
     </NavigationContainer>
   );
@@ -40,7 +39,7 @@ function RootNavigator() {
   }
 
   if (token) {
-    return <BottomTabNavigator />;
+    return <StackNavigator />;
   } else {
     return <SignIn onSignIn={refetch} />;
   }

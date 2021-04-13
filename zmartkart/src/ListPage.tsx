@@ -3,10 +3,10 @@ import { SmartShoppingList } from "./SmartShoppingList";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { BottomTabParamList } from "../route-types";
+import { StackParamList } from "../route-types";
 import { backgroundColor } from "./constants/colors";
 
-type ProfileScreenRouteProp = RouteProp<BottomTabParamList, "ShoppingList">;
+type ProfileScreenRouteProp = RouteProp<StackParamList, "ShoppingList">;
 
 export const ListPage = () => {
   const {

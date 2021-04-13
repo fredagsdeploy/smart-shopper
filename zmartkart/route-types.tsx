@@ -4,7 +4,7 @@ export type RootStackParamList = {
   NotFound: undefined;
 };
 
-export type BottomTabParamList = {
+export type StackParamList = {
   ShoppingList: { shoppingListId: string };
   ShoppingLists: undefined;
 };
