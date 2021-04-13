@@ -21,7 +21,7 @@ import { StoreName } from "./types/queries";
 import { listReducer, ListsByUserId } from "./reducers/listReducer";
 
 const { Producer, Consumer } = kafka;
-const client = new kafka.KafkaClient({ kafkaHost: "tejpb.it:9092" });
+const client = new kafka.KafkaClient({ kafkaHost: "smartcart.tejpb.it:9092" });
 const producer = new Producer(client);
 const consumer = new Consumer(
   client,
