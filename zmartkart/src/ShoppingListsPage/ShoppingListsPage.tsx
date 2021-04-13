@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components/native";
 import { ShoppingList } from "../reducers/shoppingLists";
 import { take } from "lodash";
@@ -10,6 +10,7 @@ import { backgroundColor } from "../constants/colors";
 import { useQuery } from "react-query";
 import { createList, fetchLists, List } from "../backend";
 import { v4 as uuid } from "react-native-uuid";
+import Dialog from "react-native-dialog";
 
 export const ShoppingListsPage = () => {
   const { data, isLoading, refetch } = useQuery("lists", fetchLists);
@@ -24,6 +25,9 @@ export const ShoppingListsPage = () => {
     return <ActivityIndicator />;
   }
 
+  const [viewNewListDialog, setViewNewListDialog] = useState(false);
+  const [newListName, setNewListName] = useState("NewList");
+
   return (
     <Container>
       <StatusBar style={"dark"} />
@@ -36,19 +40,26 @@ export const ShoppingListsPage = () => {
           }}
         >
           <Header>Lists</Header>
-          <AddBtn
-            underlayColor={"#802a2d"}
-            onPress={() =>
-              Alert.prompt(
-                "Add new list",
-                "Enter name for new list",
-                async (listName) => {
-                  await createList(uuid(), listName);
-                  await refetch();
-                }
-              )
-            }
+          <Dialog.Container
+            visible={viewNewListDialog}
+            onBackdropPress={() => setViewNewListDialog(false)}
           >
+            <Dialog.Title>Add new list</Dialog.Title>
+            <Dialog.Input
+              label={"Enter name for list"}
+              onChangeText={(listName: string) => setNewListName(listName)}
+            />
+            <Dialog.Button label="Cancel" onPress={() => setViewNewListDialog(false)} />
+            <Dialog.Button
+              label="Add"
+              onPress={async () => {
+                setViewNewListDialog(false);
+                await createList(uuid(), newListName);
+                await refetch();
+              }}
+            />
+          </Dialog.Container>
+          <AddBtn underlayColor={"#802a2d"} onPress={() => setViewNewListDialog(true)}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <FontAwesome5 name="plus" size={20} color="white" />
               <View style={{ width: 10 }} />
