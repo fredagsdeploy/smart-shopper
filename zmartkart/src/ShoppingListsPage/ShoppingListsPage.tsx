@@ -88,10 +88,14 @@ export const ShoppingListsPage = () => {
               label="Add"
               onPress={async () => {
                 setViewNewListDialog(false);
-                await createList(uuid(), newListName);
+                const newListId = uuid();
+                await createList(newListId, newListName);
                 fetchLists()
                   .then((res) => {
                     dispatch(setShoppingLists(res));
+                    navigation.navigate("ShoppingList", {
+                      shoppingListId: newListId,
+                    });
                   })
                   .catch((err) => console.log(err));
               }}
