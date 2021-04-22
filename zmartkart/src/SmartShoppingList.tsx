@@ -24,6 +24,7 @@ import {
 } from "./backend";
 import { Relatables } from "./types";
 import { fetchListAndGraph } from "./reducers/thunks";
+import { AvoidKeyboard } from "./AvoidKeyboard";
 
 interface Props {
   shoppingListId: string;
@@ -71,10 +72,7 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
         setCurrentItem={setCurrentItem}
       />
 
-      <KeyboardAvoidingView
-        behavior={"padding"}
-        style={{ backgroundColor: "white" }}
-      >
+      <AvoidKeyboard>
         <NewItemRow>
           <TextInput
             value={newItemName}
@@ -105,7 +103,7 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
             </Text>
           </TouchableOpacity>
         </NewItemRow>
-      </KeyboardAvoidingView>
+      </AvoidKeyboard>
     </>
   );
 };
