@@ -13,7 +13,7 @@ import StackNavigator from "./StackNavigator";
 import LinkingConfiguration from "./LinkingConfiguration";
 import { SignIn } from "../src/SignIn";
 import { useQuery } from "react-query";
-import { getAccessToken } from "../src/backend";
+import { getAccessToken } from "../src/authUtils";
 
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started

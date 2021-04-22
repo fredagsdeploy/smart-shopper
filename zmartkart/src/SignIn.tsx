@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import styled from "styled-components/native";
 import * as Google from "expo-google-app-auth";
-import { setAccessToken, setRefreshToken } from "./backend";
+import { setAccessToken, setRefreshToken } from "./authUtils";
 import { FontAwesome } from "@expo/vector-icons";
 import { backgroundColor } from "./constants/colors";
 import { platformClientIds } from "./authUtils";

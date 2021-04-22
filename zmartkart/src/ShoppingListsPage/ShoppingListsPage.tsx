@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
-import {selectItemList, setShoppingLists, ShoppingList} from "../reducers/shoppingLists";
+import {
+  selectItemList,
+  setShoppingLists,
+  ShoppingList,
+} from "../reducers/shoppingLists";
 import { take } from "lodash";
 import {
   ActivityIndicator,
@@ -14,11 +18,10 @@ import { StatusBar } from "expo-status-bar";
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { backgroundColor } from "../constants/colors";
-import { useQuery } from "react-query";
 import { createList, fetchItemGraph, fetchLists, List } from "../backend";
 import { v4 as uuid } from "react-native-uuid";
 import Dialog from "react-native-dialog";
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setGraph } from "../reducers/itemGraph";
 
 const cutIfListNameIsTooLong = (listName: string) => {

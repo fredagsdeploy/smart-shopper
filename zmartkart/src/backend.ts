@@ -3,57 +3,23 @@ import { Err, Ok, Result } from "./result";
 import { ItemId, ListId, StoreId } from "../../backend/src/types/listEvents";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
+import {
+  checkIfTokenExpired,
+  clearAccessToken,
+  getAccessToken,
+  getRefreshToken,
+  refreshAuthAsync,
+} from "./authUtils";
 
 const hostname = "window.location.host";
 const eventApiUrl = `https://${hostname}/eventApi/telegraf`;
 //const apiUrl = `https://${hostname}/api/`;
-const apiUrl = `https://smartcart.tejpb.it/api/`;
+// const apiUrl = "http://localhost:4180";
+//const apiUrl = "https://smartcart.tejpb.it/api";
+const apiUrl = "http://192.168.1.124:4180/api";
+// ? `https://smartcart.tejpb.it/api`
+// : `http://192.168.1.124:4180/api`;
 const authString = "";
-
-let accessToken: string | null = null;
-
-export const setAccessToken = async (token: string | null): Promise<void> => {
-  accessToken = token;
-  if (Platform.OS === "web") {
-    return;
-  }
-
-  if (token) {
-    return SecureStore.setItemAsync("token", token);
-  } else {
-    return SecureStore.deleteItemAsync("token");
-  }
-};
-
-export const setRefreshToken = async (token: string): Promise<void> => {
-  SecureStore.setItemAsync("refreshToken", token);
-};
-
-export const getRefreshToken = async (): Promise<string | null> => {
-  return SecureStore.getItemAsync("refreshToken");
-};
-
-export const getAccessToken = async (): Promise<string | null> => {
-  if (Platform.OS === "web") {
-    return "web";
-  }
-
-  if (!accessToken) {
-    accessToken = await SecureStore.getItemAsync("token");
-  }
-
-  if (typeof accessToken === "string" && checkIfTokenExpired(accessToken)) {
-    const r = await getRefreshToken();
-    if (!r) {
-      return null;
-    }
-    const resp = await refreshAuthAsync(r);
-    setAccessToken(resp.accessToken);
-    return resp.accessToken;
-  }
-
-  return accessToken;
-};
 
 class ApiResponse<T> {
   status: number;
