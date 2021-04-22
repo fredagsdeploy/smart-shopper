@@ -64,7 +64,7 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
   }
 
   return (
-    <>
+    <AvoidKeyboard>
       <List
         shoppingListId={shoppingListId}
         items={[...uncheckedItems, ...checkedItems]}
@@ -72,39 +72,37 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
         setCurrentItem={setCurrentItem}
       />
 
-      <AvoidKeyboard>
-        <NewItemRow>
-          <TextInput
-            value={newItemName}
-            onSubmitEditing={async () => {
-              await addNewItem();
+      <NewItemRow>
+        <TextInput
+          value={newItemName}
+          onSubmitEditing={async () => {
+            await addNewItem();
+          }}
+          onChangeText={(value) => {
+            setNewItemName(value);
+          }}
+          aria-label="New item"
+          placeholder="New item"
+          style={{ fontSize: 18, marginRight: 8, minWidth: "auto", flex: 1 }}
+        />
+        <TouchableOpacity
+          style={{ flexDirection: "row", alignItems: "center" }}
+          onPress={addNewItem}
+        >
+          <FontAwesome5 name="plus" size={20} color={ghostButtonTextColor} />
+          <View style={{ width: 10 }} />
+          <Text
+            style={{
+              color: ghostButtonTextColor,
+              fontWeight: "700",
+              fontSize: 20,
             }}
-            onChangeText={(value) => {
-              setNewItemName(value);
-            }}
-            aria-label="New item"
-            placeholder="New item"
-            style={{ fontSize: 18, marginRight: 8, minWidth: "auto", flex: 1 }}
-          />
-          <TouchableOpacity
-            style={{ flexDirection: "row", alignItems: "center" }}
-            onPress={addNewItem}
           >
-            <FontAwesome5 name="plus" size={20} color={ghostButtonTextColor} />
-            <View style={{ width: 10 }} />
-            <Text
-              style={{
-                color: ghostButtonTextColor,
-                fontWeight: "700",
-                fontSize: 20,
-              }}
-            >
-              Add
-            </Text>
-          </TouchableOpacity>
-        </NewItemRow>
-      </AvoidKeyboard>
-    </>
+            Add
+          </Text>
+        </TouchableOpacity>
+      </NewItemRow>
+    </AvoidKeyboard>
   );
 };
 
