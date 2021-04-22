@@ -1,17 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addItem,
-  Item,
-  removeItem,
-  selectItems,
-  toggleItem,
-  updateItem,
-} from "./reducers/shoppingLists";
+import { Item, selectItemList } from "./reducers/shoppingLists";
 import { ListRow } from "./ListRow";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
 import { useOrder } from "./customHooks/useOrder";
-import { v4 as uuid } from "react-native-uuid";
 import {
   ActivityIndicator,
   FlatList,
@@ -23,27 +15,30 @@ import {
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { ghostButtonTextColor } from "./constants/colors";
-import { useQuery } from "react-query";
 import {
   addItemToList,
-  checkItem, fetchItemGraph,
-  fetchLists,
+  checkItem,
   ListItem,
   renameItem,
   uncheckItem,
 } from "./backend";
-import {selectItemGraph, setGraph} from "./reducers/itemGraph";
-import { Relatable, Relatables, ShoppingItem } from "./types";
-import { store } from "./reducers/store";
+import { Relatables } from "./types";
+import { fetchListAndGraph } from "./reducers/thunks";
 
 interface Props {
   shoppingListId: string;
 }
 
 export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
-  const { data, isLoading, refetch } = useQuery("lists", fetchLists);
+  const dispatch = useDispatch();
 
-  const list = data?.[shoppingListId];
+  useEffect(() => {
+    dispatch(fetchListAndGraph(shoppingListId));
+  }, [dispatch, shoppingListId]);
+
+  const lists = useSelector(selectItemList);
+
+  const list = lists?.[shoppingListId];
   const items = Object.values(list?.items ?? {});
 
   // Sort items with graph
@@ -53,10 +48,12 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
 
   const addNewItem = async () => {
     await addItemToList(shoppingListId, newItemName.trim());
-    await refetch();
+    await dispatch(fetchListAndGraph(shoppingListId));
     setNewItemName("");
   };
 
+  // TODO : Fix loading state
+  const isLoading = false;
   if (isLoading) {
     return <ActivityIndicator />;
   }
@@ -69,16 +66,8 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
     <>
       <List
         shoppingListId={shoppingListId}
-        items={uncheckedItems}
+        items={[...uncheckedItems, ...checkedItems]}
         storeId={list.storeId}
-        refetch={refetch}
-        setCurrentItem={setCurrentItem}
-      />
-      <List
-        shoppingListId={shoppingListId}
-        items={checkedItems}
-        storeId={list.storeId}
-        refetch={refetch}
         setCurrentItem={setCurrentItem}
       />
 
@@ -125,7 +114,6 @@ interface ListProps {
   shoppingListId: string;
   items: ListItem[];
   storeId: string;
-  refetch: () => void;
   setCurrentItem: (item: Relatables) => void;
 }
 
@@ -133,21 +121,9 @@ const List: React.VFC<ListProps> = ({
   shoppingListId,
   items,
   storeId,
-  refetch,
   setCurrentItem,
 }) => {
   const dispatch = useDispatch();
-
-  const updateGraph = () => {
-    fetchItemGraph(shoppingListId)
-      .then((res) => {
-        if (res.success) {
-          console.log("Successfully got item graph", res);
-          dispatch(setGraph(res.unwrap().value));
-        }
-      })
-      .catch((err) => console.log(err));
-  }
 
   return (
     <FlatList<Item>
@@ -163,26 +139,17 @@ const List: React.VFC<ListProps> = ({
             setCurrentItem(item.name);
             if (item.checked) {
               await uncheckItem(shoppingListId, storeId, item.name);
-              console.log("UNCHECK")
             } else {
               await checkItem(shoppingListId, storeId, item.name);
-              console.log("CHECK")
             }
-            await refetch();
-            updateGraph();
+
+            await dispatch(fetchListAndGraph(shoppingListId));
           }}
           name={item.name}
           onNameChange={async (name: string) => {
             await renameItem(shoppingListId, item.id, name);
           }}
-          onRemove={() => {
-            dispatch(
-              removeItem({
-                shoppingListId: shoppingListId,
-                itemId: item.id,
-              })
-            );
-          }}
+          onRemove={() => {}}
         />
       )}
     />

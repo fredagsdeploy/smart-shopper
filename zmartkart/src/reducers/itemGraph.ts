@@ -1,13 +1,26 @@
-import { createAction, createReducer } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { ItemGraph } from "../types";
 import { RootState } from "./rootReducer";
+import {fetchListAndGraph} from "./thunks";
 
-export const setGraph = createAction<ItemGraph>("itemGraph/set");
+const initialState: ItemGraph = {};
 
-export const itemGraph = createReducer<ItemGraph>({}, (builder) => {
-  builder.addCase(setGraph, (state, action) => {
-    return action.payload;
-  });
+const itemGraphSlice = createSlice({
+  initialState,
+  reducers: {
+    setGraph: (state, action) => {
+      return action.payload;
+    },
+  },
+  extraReducers: {
+    [fetchListAndGraph.fulfilled as any]: (state, action) => {
+      return action.payload.graph;
+    },
+  },
+  name: "graph",
 });
+
+export const setGraph = itemGraphSlice.actions.setGraph;
+export const itemGraph = itemGraphSlice.reducer;
 
 export const selectItemGraph = (state: RootState) => state.itemGraph;

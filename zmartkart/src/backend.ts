@@ -41,6 +41,7 @@ class ApiResponse<T> {
   status: number;
   message: string;
   value: T;
+
   constructor(status: number) {
     this.status = status;
     this.value = {} as T;
@@ -127,7 +128,7 @@ export const postCheckUncheckEvent = (event: CheckedUncheckedEvent) => {
 };
 
 export const fetchItemGraph = (shoppingListId: string) =>
-  fetchWithException<ItemGraph>(
+  fetchWithException<{ graph: ItemGraph }>(
     `${apiUrl}/graph/?shoppingListId=${shoppingListId}`
   );
 
@@ -153,15 +154,9 @@ export const fetchLists = async () => {
       "Cache-Control": "no-store",
       Authorization: "Bearer " + token,
     },
-  })
-    .then<Record<ListId, List>>((r) => {
-      console.log(r.status);
-      return r.json();
-    })
-    .then((r) => {
-      console.log(r);
-      return r;
-    });
+  }).then<Record<ListId, List>>((r) => {
+    return r.json();
+  });
 };
 
 export const postItemEvent = async (type: string, payload: object) => {

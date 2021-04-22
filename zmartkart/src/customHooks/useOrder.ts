@@ -1,13 +1,6 @@
-import { ShoppingListItems } from "../reducers/shoppingLists";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import _ from "lodash";
-import {
-  ItemGraph,
-  Place,
-  Relatable,
-  Relatables,
-  ShoppingItem,
-} from "../types";
+import { Place, Relatables } from "../types";
 import { useSelector } from "react-redux";
 import { selectItemGraph } from "../reducers/itemGraph";
 import { ListItem } from "../backend";
@@ -20,7 +13,7 @@ export function useOrder(shoppingCardItems: ListItem[]) {
   const itemGraph = useSelector(selectItemGraph);
 
   const [checkedItems, uncheckedItems] = (() => {
-    let graphElement = itemGraph[previousItem];
+    const graphElement = itemGraph[previousItem];
 
     const [relatedItems, unrelatedItems] = _.partition(
       shoppingCartItemsValues,

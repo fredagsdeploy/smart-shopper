@@ -17,19 +17,6 @@ export const ListPage = () => {
   } = useRoute<ProfileScreenRouteProp>();
   console.log(shoppingListId);
 
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    fetchItemGraph(shoppingListId)
-      .then((res) => {
-        if (res.success) {
-          console.log("Successfully got item graph", res);
-          dispatch(setGraph(res.unwrap().value));
-        }
-      })
-      .catch((err) => console.log(err));
-  }, [dispatch]);
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor }}>
       <SmartShoppingList shoppingListId={shoppingListId} />

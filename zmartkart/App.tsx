@@ -11,6 +11,7 @@ import { store } from "./src/reducers/store";
 import { fetchItemGraph } from "./src/backend";
 import { setGraph } from "./src/reducers/itemGraph";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { Platform, UIManager } from "react-native";
 
 const client = new QueryClient();
 
@@ -28,18 +29,7 @@ function NewApp() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
 
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    fetchItemGraph()
-      .then((res) => {
-        if (res.success) {
-          console.log("Successfully got item graph", res);
-          dispatch(setGraph(res.unwrap().value));
-        }
-      })
-      .catch((err) => console.log(err));
-  }, [dispatch]);
+  // SecureStore.deleteItemAsync("token");
 
   if (!isLoadingComplete) {
     return null;
@@ -51,4 +41,11 @@ function NewApp() {
       </SafeAreaProvider>
     );
   }
+}
+
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
 }

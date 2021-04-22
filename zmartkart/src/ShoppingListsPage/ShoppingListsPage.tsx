@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
-import { ShoppingList } from "../reducers/shoppingLists";
+import {selectItemList, setShoppingLists, ShoppingList} from "../reducers/shoppingLists";
 import { take } from "lodash";
 import {
   ActivityIndicator,
@@ -15,9 +15,11 @@ import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { backgroundColor } from "../constants/colors";
 import { useQuery } from "react-query";
-import { createList, fetchLists, List } from "../backend";
+import { createList, fetchItemGraph, fetchLists, List } from "../backend";
 import { v4 as uuid } from "react-native-uuid";
 import Dialog from "react-native-dialog";
+import {useDispatch, useSelector} from "react-redux";
+import { setGraph } from "../reducers/itemGraph";
 
 const cutIfListNameIsTooLong = (listName: string) => {
   if (listName.length > 9) {
@@ -27,7 +29,18 @@ const cutIfListNameIsTooLong = (listName: string) => {
 };
 
 export const ShoppingListsPage = () => {
-  const { data, isLoading, refetch } = useQuery("lists", fetchLists);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    fetchLists()
+      .then((res) => {
+        console.log(res);
+        dispatch(setShoppingLists(res));
+      })
+      .catch((err) => console.log(err));
+  }, [dispatch]);
+
+  const data = useSelector(selectItemList);
 
   const navigation = useNavigation();
 
@@ -38,6 +51,7 @@ export const ShoppingListsPage = () => {
   const [viewNewListDialog, setViewNewListDialog] = useState(false);
   const [newListName, setNewListName] = useState("NewList");
 
+  const isLoading = false;
   if (isLoading) {
     return <ActivityIndicator />;
   }
@@ -72,7 +86,11 @@ export const ShoppingListsPage = () => {
               onPress={async () => {
                 setViewNewListDialog(false);
                 await createList(uuid(), newListName);
-                await refetch();
+                fetchLists()
+                  .then((res) => {
+                    dispatch(setShoppingLists(res));
+                  })
+                  .catch((err) => console.log(err));
               }}
             />
           </Dialog.Container>
