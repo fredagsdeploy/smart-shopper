@@ -154,7 +154,7 @@ const List: React.VFC<ListProps> = ({
 
 const NewItemRow = styled.View`
   display: flex;
-  box-shadow: 0 -1px 2px rgb(214, 216, 221);
+  box-shadow: 0 -3px 2px rgb(214, 216, 221);
   background-color: white;
   padding: 16px;
   flex-direction: row;
