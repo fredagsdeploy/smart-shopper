@@ -8,22 +8,22 @@ import {
 } from "react-native";
 import styled from "styled-components/native";
 import * as Google from "expo-google-app-auth";
-import { setAccessToken } from "./backend";
+import { setAccessToken, setRefreshToken } from "./backend";
 import { FontAwesome } from "@expo/vector-icons";
 import { backgroundColor } from "./constants/colors";
+import { platformClientIds } from "./authUtils";
 
 const fontSize = 16;
 
 export const SignIn = ({ onSignIn }: { onSignIn: () => void }) => {
   const signIn = async () => {
-    const result = await Google.logInAsync({
-      iosClientId:
-        "73488926457-lgc68tu3558a6kbh4iuf7p2i7co90mhf.apps.googleusercontent.com",
-      androidClientId:
-        "73488926457-ecdu70s6efetsudrquol79acuf94pivj.apps.googleusercontent.com",
-    });
+    const result = await Google.logInAsync(platformClientIds);
 
     if (result.type === "success") {
+      if (result.refreshToken) {
+        await setRefreshToken(result.refreshToken);
+      }
+      console.log("result", result);
       console.log("success", result.idToken);
       await setAccessToken(result.idToken);
       onSignIn();

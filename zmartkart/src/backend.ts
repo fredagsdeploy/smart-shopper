@@ -25,6 +25,14 @@ export const setAccessToken = async (token: string | null): Promise<void> => {
   }
 };
 
+export const setRefreshToken = async (token: string): Promise<void> => {
+  SecureStore.setItemAsync("refreshToken", token);
+};
+
+export const getRefreshToken = async (): Promise<string | null> => {
+  return SecureStore.getItemAsync("refreshToken");
+};
+
 export const getAccessToken = async (): Promise<string | null> => {
   if (Platform.OS === "web") {
     return "web";
@@ -32,6 +40,16 @@ export const getAccessToken = async (): Promise<string | null> => {
 
   if (!accessToken) {
     accessToken = await SecureStore.getItemAsync("token");
+  }
+
+  if (typeof accessToken === "string" && checkIfTokenExpired(accessToken)) {
+    const r = await getRefreshToken();
+    if (!r) {
+      return null;
+    }
+    const resp = await refreshAuthAsync(r);
+    setAccessToken(resp.accessToken);
+    return resp.accessToken;
   }
 
   return accessToken;
