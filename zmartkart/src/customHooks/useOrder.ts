@@ -1,67 +1,32 @@
 import { ShoppingListItems } from "../reducers/shoppingLists";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import _ from "lodash";
-import { ItemGraph, Place, Relatable, Relatables, ShoppingItem, } from "../types";
+import {
+  ItemGraph,
+  Place,
+  Relatable,
+  Relatables,
+  ShoppingItem,
+} from "../types";
 import { useSelector } from "react-redux";
 import { selectItemGraph } from "../reducers/itemGraph";
+import { ListItem } from "../backend";
 
-const dataStore: Partial<Record<Relatables, Relatable[]>> = {};
+export function useOrder(shoppingCardItems: ListItem[]) {
+  const [previousItem, setPreviousItem] = useState<Relatables>(Place.Start);
 
-dataStore[Place.Start] = [
-  {
-    item: "Fläskkött",
-    score: 1,
-  },
-  {
-    item: "Äpple",
-    score: 10,
-  },
-];
-
-function onItemCheck(
-  item: ShoppingItem,
-  previous: Relatables,
-  itemGraph: ItemGraph
-) {
-  const dataStore = itemGraph;
-  if (!dataStore[previous]) {
-    dataStore[previous] = [];
-  }
-
-  const candidate = dataStore[previous]!.find(
-    (relatable) => relatable.item === item
-  );
-
-  if (candidate) {
-    candidate.score = candidate.score + 1;
-  } else {
-    dataStore[previous]?.push({ item: item, score: 1 });
-  }
-
-  return dataStore;
-}
-
-export function useOrder(shoppingCardItems: ShoppingListItems) {
-  const previousItemRef = useRef<Relatables>(Place.Start);
   const shoppingCartItemsValues = Object.values(shoppingCardItems);
+
   const itemGraph = useSelector(selectItemGraph);
 
-  const setCurrentItem = useCallback((item: ShoppingItem) => {
-    onItemCheck(item, previousItemRef.current, itemGraph);
-    previousItemRef.current = item;
-  }, []);
+  const [checkedItems, uncheckedItems] = (() => {
+    let graphElement = itemGraph[previousItem];
 
-  const [checkedItems, uncheckedItems] = useMemo(() => {
-    const item = previousItemRef.current;
-
-    let dataStoreElement = dataStore[item];
     const [relatedItems, unrelatedItems] = _.partition(
       shoppingCartItemsValues,
       (i) => {
-        if (dataStoreElement) {
-          return dataStoreElement.some(
-            (relatable) => relatable.item === i.name
-          );
+        if (graphElement) {
+          return graphElement.some((relatable) => relatable.item === i.name);
         }
 
         return false;
@@ -71,7 +36,7 @@ export function useOrder(shoppingCardItems: ShoppingListItems) {
     const orderedRelatedItems = _.orderBy(
       relatedItems,
       (i) => {
-        return dataStoreElement?.find((relatable) => relatable.item === i.name)
+        return graphElement?.find((relatable) => relatable.item === i.name)
           ?.score;
       },
       ["desc"]
@@ -81,11 +46,11 @@ export function useOrder(shoppingCardItems: ShoppingListItems) {
       [...orderedRelatedItems, ...unrelatedItems],
       (item) => item.checked
     );
-  }, [shoppingCartItemsValues]);
+  })();
 
   return {
     checkedItems,
     uncheckedItems,
-    setCurrentItem,
+    setCurrentItem: setPreviousItem,
   };
 }

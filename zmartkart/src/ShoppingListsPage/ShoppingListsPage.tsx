@@ -63,7 +63,10 @@ export const ShoppingListsPage = () => {
               label={"Enter name for list"}
               onChangeText={(listName: string) => setNewListName(listName)}
             />
-            <Dialog.Button label="Cancel" onPress={() => setViewNewListDialog(false)} />
+            <Dialog.Button
+              label="Cancel"
+              onPress={() => setViewNewListDialog(false)}
+            />
             <Dialog.Button
               label="Add"
               onPress={async () => {
@@ -73,7 +76,10 @@ export const ShoppingListsPage = () => {
               }}
             />
           </Dialog.Container>
-          <AddBtn underlayColor={"#802a2d"} onPress={() => setViewNewListDialog(true)}>
+          <AddBtn
+            underlayColor={"#802a2d"}
+            onPress={() => setViewNewListDialog(true)}
+          >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <FontAwesome5 name="plus" size={20} color="white" />
               <View style={{ width: 10 }} />
@@ -159,10 +165,10 @@ export const ShoppingListsPage = () => {
 };
 
 const ListNameTextContainer = styled.View`
-  border-radius: 10;
-  border-width: 1;
+  border-radius: 10px;
+  border-width: 1px;
   border-color: white;
-  margin-top: -19;
+  margin-top: -19px;
   background: white;
   align-self: flex-end;
   padding-left: 10px;

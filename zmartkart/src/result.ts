@@ -1,3 +1,5 @@
+// Importing this file is an error
+
 export class Err<E> {
   success: false = false;
   error: E;

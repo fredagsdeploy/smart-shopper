@@ -123,11 +123,13 @@ export const postCheckUncheckEvent = (event: CheckedUncheckedEvent) => {
 
   return fetch(eventApiUrl, requestOptions)
     .then((response) => response.text())
-    .then((result) => console.log(result))
     .catch((error) => console.log("error", error));
 };
 
-export const fetchItemGraph = () => fetchWithException<ItemGraph>(apiUrl);
+export const fetchItemGraph = (shoppingListId: string) =>
+  fetchWithException<ItemGraph>(
+    `${apiUrl}/graph/?shoppingListId=${shoppingListId}`
+  );
 
 export interface ListItem {
   id: ItemId;
@@ -151,7 +153,15 @@ export const fetchLists = async () => {
       "Cache-Control": "no-store",
       Authorization: "Bearer " + token,
     },
-  }).then<Record<ListId, List>>((r) => r.json());
+  })
+    .then<Record<ListId, List>>((r) => {
+      console.log(r.status);
+      return r.json();
+    })
+    .then((r) => {
+      console.log(r);
+      return r;
+    });
 };
 
 export const postItemEvent = async (type: string, payload: object) => {
@@ -170,11 +180,11 @@ export const postItemEvent = async (type: string, payload: object) => {
   });
 };
 
-export const addItemToList = (listId: string, itemId: string, name: string) =>
+export const addItemToList = (listId: string, name: string) =>
   postItemEvent("appendItemToList", {
     listId,
     item: {
-      id: itemId,
+      id: name,
       name,
     },
   });

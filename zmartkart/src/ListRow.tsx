@@ -11,7 +11,7 @@ interface Props {
   onRemove: () => void;
 }
 
-export const ListItem: React.VFC<Props> = ({
+export const ListRow: React.VFC<Props> = ({
   name,
   checked,
   onChange,

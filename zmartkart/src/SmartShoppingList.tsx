@@ -7,7 +7,7 @@ import {
   toggleItem,
   updateItem,
 } from "./reducers/shoppingLists";
-import { ListItem } from "./ListItem";
+import { ListRow } from "./ListRow";
 import React, { useState } from "react";
 import styled from "styled-components/native";
 import { useOrder } from "./customHooks/useOrder";
@@ -26,28 +26,33 @@ import { ghostButtonTextColor } from "./constants/colors";
 import { useQuery } from "react-query";
 import {
   addItemToList,
-  checkItem,
+  checkItem, fetchItemGraph,
   fetchLists,
+  ListItem,
   renameItem,
   uncheckItem,
 } from "./backend";
+import {selectItemGraph, setGraph} from "./reducers/itemGraph";
+import { Relatable, Relatables, ShoppingItem } from "./types";
+import { store } from "./reducers/store";
 
 interface Props {
   shoppingListId: string;
 }
 
 export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
-  const dispatch = useDispatch();
   const { data, isLoading, refetch } = useQuery("lists", fetchLists);
 
   const list = data?.[shoppingListId];
   const items = Object.values(list?.items ?? {});
 
+  // Sort items with graph
+  const { checkedItems, uncheckedItems, setCurrentItem } = useOrder(items);
+
   const [newItemName, setNewItemName] = useState("");
 
   const addNewItem = async () => {
-    const newItemId = uuid();
-    await addItemToList(shoppingListId, newItemId, newItemName);
+    await addItemToList(shoppingListId, newItemName.trim());
     await refetch();
     setNewItemName("");
   };
@@ -62,38 +67,21 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
 
   return (
     <>
-      <FlatList<Item>
-        data={items}
-        keyboardDismissMode={"on-drag"}
-        style={{ backgroundColor: "white" }}
-        contentContainerStyle={{ alignItems: "stretch", paddingHorizontal: 10 }}
-        renderItem={({ item }) => (
-          <ListItem
-            key={item.id}
-            checked={item.checked}
-            onChange={async () => {
-              if (item.checked) {
-                await uncheckItem(shoppingListId, list.storeId, item.id);
-              } else {
-                await checkItem(shoppingListId, list.storeId, item.id);
-              }
-              await refetch();
-            }}
-            name={item.name}
-            onNameChange={async (name: string) => {
-              await renameItem(shoppingListId, item.id, name);
-            }}
-            onRemove={() => {
-              dispatch(
-                removeItem({
-                  shoppingListId: shoppingListId,
-                  itemId: item.id,
-                })
-              );
-            }}
-          />
-        )}
+      <List
+        shoppingListId={shoppingListId}
+        items={uncheckedItems}
+        storeId={list.storeId}
+        refetch={refetch}
+        setCurrentItem={setCurrentItem}
       />
+      <List
+        shoppingListId={shoppingListId}
+        items={checkedItems}
+        storeId={list.storeId}
+        refetch={refetch}
+        setCurrentItem={setCurrentItem}
+      />
+
       <KeyboardAvoidingView
         behavior={"padding"}
         style={{ backgroundColor: "white" }}
@@ -130,6 +118,74 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
         </NewItemRow>
       </KeyboardAvoidingView>
     </>
+  );
+};
+
+interface ListProps {
+  shoppingListId: string;
+  items: ListItem[];
+  storeId: string;
+  refetch: () => void;
+  setCurrentItem: (item: Relatables) => void;
+}
+
+const List: React.VFC<ListProps> = ({
+  shoppingListId,
+  items,
+  storeId,
+  refetch,
+  setCurrentItem,
+}) => {
+  const dispatch = useDispatch();
+
+  const updateGraph = () => {
+    fetchItemGraph(shoppingListId)
+      .then((res) => {
+        if (res.success) {
+          console.log("Successfully got item graph", res);
+          dispatch(setGraph(res.unwrap().value));
+        }
+      })
+      .catch((err) => console.log(err));
+  }
+
+  return (
+    <FlatList<Item>
+      data={items}
+      keyboardDismissMode={"on-drag"}
+      style={{ backgroundColor: "white" }}
+      contentContainerStyle={{ alignItems: "stretch", paddingHorizontal: 10 }}
+      renderItem={({ item }) => (
+        <ListRow
+          key={item.id}
+          checked={item.checked}
+          onChange={async () => {
+            setCurrentItem(item.name);
+            if (item.checked) {
+              await uncheckItem(shoppingListId, storeId, item.name);
+              console.log("UNCHECK")
+            } else {
+              await checkItem(shoppingListId, storeId, item.name);
+              console.log("CHECK")
+            }
+            await refetch();
+            updateGraph();
+          }}
+          name={item.name}
+          onNameChange={async (name: string) => {
+            await renameItem(shoppingListId, item.id, name);
+          }}
+          onRemove={() => {
+            dispatch(
+              removeItem({
+                shoppingListId: shoppingListId,
+                itemId: item.id,
+              })
+            );
+          }}
+        />
+      )}
+    />
   );
 };
 

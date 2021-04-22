@@ -4,7 +4,7 @@ import { RootState } from "./rootReducer";
 
 export const setGraph = createAction<ItemGraph>("itemGraph/set");
 
-export const itemGraph = createReducer({}, (builder) => {
+export const itemGraph = createReducer<ItemGraph>({}, (builder) => {
   builder.addCase(setGraph, (state, action) => {
     return action.payload;
   });
