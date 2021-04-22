@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import styled from "styled-components/native";
 import { ShoppingList } from "../reducers/shoppingLists";
 import { take } from "lodash";
-import { ActivityIndicator, Alert, FlatList, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Platform,
+  Text,
+  View,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -28,12 +35,12 @@ export const ShoppingListsPage = () => {
 
   const items = lists.length > 0 ? [...lists, null] : lists;
 
+  const [viewNewListDialog, setViewNewListDialog] = useState(false);
+  const [newListName, setNewListName] = useState("NewList");
+
   if (isLoading) {
     return <ActivityIndicator />;
   }
-
-  const [viewNewListDialog, setViewNewListDialog] = useState(false);
-  const [newListName, setNewListName] = useState("NewList");
 
   return (
     <Container>
