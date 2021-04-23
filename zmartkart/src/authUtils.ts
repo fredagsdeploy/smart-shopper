@@ -33,8 +33,8 @@ export const refreshAuthAsync = async (refreshToken: string) => {
 export const isTokenExpired = (token: string) => {
   const parts = token.split(".");
   if (parts.length !== 3) {
-    console.error(`Wierd token, assume expiered. Token: ${token}`);
-    return false;
+    console.error(`Weird token, assume expiered. Token: ${token}`);
+    return true;
   }
   const payload = decode(parts[1]);
   const jsonPayload = JSON.parse(payload);
