@@ -30,7 +30,7 @@ export const refreshAuthAsync = async (refreshToken: string) => {
   return await AppAuth.refreshAsync(refreshTokenConfig, refreshToken);
 };
 
-export const checkIfTokenExpired = (token: string) => {
+export const isTokenExpired = (token: string) => {
   const parts = token.split(".");
   if (parts.length !== 3) {
     console.error(`Wierd token, assume expiered. Token: ${token}`);
@@ -45,12 +45,12 @@ export const checkIfTokenExpired = (token: string) => {
   return new Date(jsonPayload.exp * 1000) < new Date();
 };
 
-export const clearAccessToken = async (): Promise<void> => {
-  SecureStore.deleteItemAsync("refreshToken");
+export const clearRefreshToken = async (): Promise<void> => {
+  return SecureStore.deleteItemAsync("refreshToken");
 };
 
 export const setRefreshToken = async (token: string): Promise<void> => {
-  SecureStore.setItemAsync("refreshToken", token);
+  return SecureStore.setItemAsync("refreshToken", token);
 };
 
 export const getRefreshToken = async (): Promise<string | null> => {
@@ -79,20 +79,20 @@ export const getAccessToken = async (): Promise<string | null> => {
     accessToken = await SecureStore.getItemAsync("token");
   }
 
-  if (typeof accessToken === "string" && checkIfTokenExpired(accessToken)) {
+  if (typeof accessToken === "string" && isTokenExpired(accessToken)) {
     const r = await getRefreshToken();
     if (!r) {
       return null;
     }
     try {
       const resp = await refreshAuthAsync(r);
-      setAccessToken(resp.accessToken);
+      await setAccessToken(resp.accessToken);
       return resp.accessToken;
     } catch (error) {
       console.log(
-        "Could not refresh access token. Clearing access and refresh tokens."
+        `Could not refresh access token. Clearing access and refresh tokens. Error ${error}`
       );
-      await clearAccessToken();
+      await clearRefreshToken();
       return null;
     }
   }
