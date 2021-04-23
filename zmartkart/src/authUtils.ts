@@ -86,7 +86,7 @@ export const getAccessToken = async (): Promise<string | null> => {
     }
     try {
       const resp = await refreshAuthAsync(r);
-      await setAccessToken(resp.accessToken);
+      await setAccessToken(resp.idToken);
       return resp.accessToken;
     } catch (error) {
       console.log(
