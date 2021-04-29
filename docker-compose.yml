@@ -159,6 +159,14 @@ services:
       KAFKA_REST_BOOTSTRAP_SERVERS: "broker:29092"
       KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
       KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+  web-frontend:
+    hostname: web-frontend
+    stdin_open: true
+    tty: true
+    build:
+      context: ./zmartkart
+    ports:
+      - "3000:3000"
   oauth:
     image: quay.io/oauth2-proxy/oauth2-proxy
     command: --config=/etc/oauth2-proxy.cfg
