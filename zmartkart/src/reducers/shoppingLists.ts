@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./rootReducer";
 import { List } from "../backend";
 import { ShoppingItem } from "../types";
@@ -34,6 +34,9 @@ const shoppingListsSlice = createSlice({
     setShoppingLists: (state, action) => {
       state.lists = action.payload;
     },
+    removeShoppingList: (state, action: PayloadAction<{ listId: string }>) => {
+      delete state.lists[action.payload.listId];
+    },
   },
   extraReducers: {
     [fetchListAndGraph.fulfilled as any]: (state, action) => {
@@ -55,6 +58,7 @@ const shoppingListsSlice = createSlice({
 });
 
 export const setShoppingLists = shoppingListsSlice.actions.setShoppingLists;
+export const removeShoppingList = shoppingListsSlice.actions.removeShoppingList;
 export const shoppingLists = shoppingListsSlice.reducer;
 
 export const selectShoppingList = (state: RootState) =>

@@ -1,19 +1,12 @@
-import React, {useEffect, useLayoutEffect, useState} from "react";
+import React, { useLayoutEffect, useState } from "react";
 import styled from "styled-components/native";
 import {
   selectShoppingList,
   selectShoppingListIsLoading,
   setShoppingLists,
-  ShoppingList,
 } from "../reducers/shoppingLists";
 import { take } from "lodash";
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, RefreshControl, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -85,7 +78,7 @@ export const AllListsScreen = () => {
                 fetchLists()
                   .then((res) => {
                     dispatch(setShoppingLists(res));
-                    navigation.navigate("ShoppingList", {
+                    navigation.navigate("SingleListScreen", {
                       shoppingListId: newListId,
                     });
                   })

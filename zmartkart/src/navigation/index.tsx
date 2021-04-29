@@ -1,19 +1,18 @@
 import {
-  NavigationContainer,
-  DefaultTheme,
   DarkTheme,
+  DefaultTheme,
+  NavigationContainer,
 } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
 import { ActivityIndicator, ColorSchemeName } from "react-native";
 
-import NotFoundScreen from "../screens/NotFoundScreen";
-import { RootStackParamList } from "../route-types";
-import StackNavigator from "./StackNavigator";
+import { RootStackParamList } from "../../route-types";
+import { StackNavigator } from "./StackNavigator";
 import LinkingConfiguration from "./LinkingConfiguration";
-import { SignIn } from "../src/SignIn";
+import { SignIn } from "../SignIn";
 import { useQuery } from "react-query";
-import { getAccessToken } from "../src/authUtils";
+import { getAccessToken } from "../authUtils";
 
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
@@ -39,7 +38,7 @@ function RootNavigator() {
   }
 
   if (token) {
-    return <StackNavigator />;
+    return <StackNavigator onSignOut={refetch} />;
   } else {
     return <SignIn onSignIn={refetch} />;
   }

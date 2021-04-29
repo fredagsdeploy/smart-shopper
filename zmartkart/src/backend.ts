@@ -181,6 +181,12 @@ export const createList = (listId: string, name: string) =>
     name,
   });
 
+export const removeList = (listId: string) =>
+  postItemEvent("removeList", {
+    storeId: "Maxi",
+    listId
+  });
+
 export const renameItem = (listId: string, itemId: string, name: string) =>
   postItemEvent("renameItem", {
     listId,

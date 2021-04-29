@@ -1,17 +1,15 @@
+import React from "react";
+import { Provider } from "react-redux";
+import { store } from "./src/reducers/store";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { Platform, UIManager } from "react-native";
+
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import useCachedResources from "./hooks/useCachedResources";
-import useColorScheme from "./hooks/useColorScheme";
-import { Navigation } from "./navigation";
-
-import React, { useEffect } from "react";
-import { Provider, useDispatch } from "react-redux";
-import { store } from "./src/reducers/store";
-import { fetchItemGraph } from "./src/backend";
-import { setGraph } from "./src/reducers/itemGraph";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { Platform, UIManager } from "react-native";
+import useCachedResources from "./src/hooks/useCachedResources";
+import useColorScheme from "./src/hooks/useColorScheme";
+import { Navigation } from "./src/navigation";
 
 const client = new QueryClient();
 
@@ -28,8 +26,6 @@ export default function App() {
 function NewApp() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
-
-  // SecureStore.deleteItemAsync("token");
 
   if (!isLoadingComplete) {
     return null;

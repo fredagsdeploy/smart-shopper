@@ -1,6 +1,6 @@
-import { Platform } from "react-native";
+import {Platform} from "react-native";
 import * as AppAuth from "expo-app-auth";
-import { decode, encode } from "base-64";
+import {decode, encode} from "base-64";
 import * as SecureStore from "expo-secure-store";
 
 let accessToken: string | null = null;
@@ -12,9 +12,7 @@ export const platformClientIds = {
     "73488926457-ecdu70s6efetsudrquol79acuf94pivj.apps.googleusercontent.com",
 };
 
-export const platformClientIdKey = Platform.select<
-  keyof typeof platformClientIds
->({
+export const platformClientIdKey = Platform.select<keyof typeof platformClientIds>({
   ios: "iosClientId",
   android: "androidClientId",
   default: "androidClientId",
@@ -26,6 +24,21 @@ export const refreshTokenConfig = {
   scopes: ["profile"],
 };
 
+export const logOutAsync = async () => {
+  const accessToken = await getAccessToken();
+  if (accessToken) {
+    await AppAuth.revokeAsync(refreshTokenConfig, {token: accessToken, isClientIdProvided: true});
+    await setAccessToken(null)
+  }
+
+  const refreshToken = await getRefreshToken();
+
+  if (refreshToken) {
+    await AppAuth.revokeAsync(refreshTokenConfig, {token: refreshToken, isClientIdProvided: true});
+    await clearRefreshToken()
+  }
+}
+
 export const refreshAuthAsync = async (refreshToken: string) => {
   return await AppAuth.refreshAsync(refreshTokenConfig, refreshToken);
 };
@@ -33,7 +46,7 @@ export const refreshAuthAsync = async (refreshToken: string) => {
 export const isTokenExpired = (token: string) => {
   const parts = token.split(".");
   if (parts.length !== 3) {
-    console.error(`Weird token, assume expiered. Token: ${token}`);
+    console.error(`Weird token, assume expired. Token: ${token}`);
     return true;
   }
   const payload = decode(parts[1]);

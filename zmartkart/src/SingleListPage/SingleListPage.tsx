@@ -1,5 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Item, selectShoppingList } from "../reducers/shoppingLists";
+import {
+  Item,
+  removeShoppingList,
+  selectShoppingList,
+} from "../reducers/shoppingLists";
 import { ListRow } from "../ListRow";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
@@ -20,6 +24,7 @@ import {
   addItemToList,
   checkItem,
   ListItem,
+  removeList,
   renameItem,
   uncheckItem,
 } from "../backend";
@@ -27,6 +32,7 @@ import { Relatables } from "../types";
 import { fetchAllLists, fetchListAndGraph } from "../reducers/thunks";
 import { AvoidKeyboard } from "../AvoidKeyboard";
 import { selectItemGraphLoading } from "../reducers/itemGraph";
+import { useNavigation } from "@react-navigation/native";
 
 interface Props {
   shoppingListId: string;
@@ -43,6 +49,28 @@ export const SingleListPage: React.FC<Props> = ({ shoppingListId }) => {
 
   const list = lists?.[shoppingListId];
   const items = Object.values(list?.items ?? {});
+
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      title: list?.name,
+      headerRight: () => {
+        return (
+          <FontAwesome5
+            name="trash"
+            size={20}
+            color={"white"}
+            style={{ marginRight: 20 }}
+            onPress={async () => {
+              await removeList(shoppingListId);
+              navigation.goBack();
+              dispatch(removeShoppingList({ listId: shoppingListId }));
+            }}
+          />
+        );
+      },
+    });
+  });
 
   // Sort items with graph
   const { checkedItems, uncheckedItems, setCurrentItem } = useOrder(items);
