@@ -5,7 +5,7 @@ import { AllListsScreen } from "../AllListsPage/AllListsScreen";
 import { SingleListScreen } from "../SingleListPage/SingleListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import { logOutAsync } from "../authUtils";
-import { StatusBar } from "react-native";
+import { Platform, StatusBar } from "react-native";
 import { TransitionPresets } from "@react-navigation/stack";
 
 const Stack = createStackNavigator<StackParamList>();
@@ -39,7 +39,11 @@ export const StackNavigator: React.FC<StackNavigatorProps> = ({
                   style={{ marginRight: 20 }}
                   onPress={async () => {
                     await logOutAsync();
-                    onSignOut();
+                    if (Platform.OS == "web") {
+                      props.navigation.navigate("/oauth2/sign_out");
+                    } else {
+                      onSignOut();
+                    }
                   }}
                 />
               );
