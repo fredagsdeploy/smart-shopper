@@ -6,7 +6,7 @@ import {
   setShoppingLists,
 } from "../reducers/shoppingLists";
 import { take } from "lodash";
-import { FlatList, RefreshControl, Text, View } from "react-native";
+import { FlatList, Platform, RefreshControl, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -44,6 +44,19 @@ export const AllListsScreen = () => {
 
   const isLoading = useSelector(selectShoppingListIsLoading);
 
+  const addNewList = async (listName: string) => {
+    const newListId = uuid();
+    await createList(newListId, listName);
+    fetchLists()
+      .then((res) => {
+        dispatch(setShoppingLists(res));
+        navigation.navigate("SingleListScreen", {
+          shoppingListId: newListId,
+        });
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <Container>
       <StatusBar style={"dark"} />
@@ -73,22 +86,22 @@ export const AllListsScreen = () => {
               label="Add"
               onPress={async () => {
                 setViewNewListDialog(false);
-                const newListId = uuid();
-                await createList(newListId, newListName);
-                fetchLists()
-                  .then((res) => {
-                    dispatch(setShoppingLists(res));
-                    navigation.navigate("SingleListScreen", {
-                      shoppingListId: newListId,
-                    });
-                  })
-                  .catch((err) => console.log(err));
+                await addNewList(newListName);
               }}
             />
           </Dialog.Container>
           <AddBtn
             underlayColor={"#802a2d"}
-            onPress={() => setViewNewListDialog(true)}
+            onPress={async () => {
+              if (Platform.OS === "web") {
+                const name = prompt("Enter name for list", "NewList");
+                if (name) {
+                  await addNewList(name);
+                }
+              } else {
+                setViewNewListDialog(true);
+              }
+            }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <FontAwesome5 name="plus" size={20} color="white" />
