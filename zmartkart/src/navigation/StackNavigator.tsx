@@ -41,7 +41,7 @@ export const StackNavigator: React.FC<StackNavigatorProps> = ({
                   style={{ marginRight: 20 }}
                   onPress={async () => {
                     if (Platform.OS == "web") {
-                      props.navigation.navigate("/oauth2/sign_out");
+                      window.location.href = "/oauth2/sign_out";
                     } else {
                       await logOutAsync();
                       onSignOut();
