@@ -1,15 +1,7 @@
 import { CheckedUncheckedEvent, ItemGraph } from "./types";
 import { Err, Ok, Result } from "./result";
 import { ItemId, ListId, StoreId } from "../../backend/src/types/listEvents";
-import * as SecureStore from "expo-secure-store";
-import { Platform } from "react-native";
-import {
-  checkIfTokenExpired,
-  clearAccessToken,
-  getAccessToken,
-  getRefreshToken,
-  refreshAuthAsync,
-} from "./authUtils";
+import { getAccessToken } from "./authUtils";
 
 const hostname = "window.location.host";
 const eventApiUrl = `https://${hostname}/eventApi/telegraf`;

@@ -1,12 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useLayoutEffect, useState} from "react";
 import styled from "styled-components/native";
 import {
-  selectItemList,
+  selectShoppingList,
+  selectShoppingListIsLoading,
   setShoppingLists,
   ShoppingList,
 } from "../reducers/shoppingLists";
 import { take } from "lodash";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  View,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -15,6 +22,7 @@ import { createList, fetchLists, List } from "../backend";
 import { v4 as uuid } from "react-native-uuid";
 import Dialog from "react-native-dialog";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchAllLists } from "../reducers/thunks";
 
 const cutIfListNameIsTooLong = (listName: string) => {
   if (listName.length > 9) {
@@ -23,18 +31,14 @@ const cutIfListNameIsTooLong = (listName: string) => {
   return listName;
 };
 
-export const ShoppingListsPage = () => {
+export const AllListsScreen = () => {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    fetchLists()
-      .then((res) => {
-        dispatch(setShoppingLists(res));
-      })
-      .catch((err) => console.log(err));
+  useLayoutEffect(() => {
+    dispatch(fetchAllLists());
   }, [dispatch]);
 
-  const data = useSelector(selectItemList);
+  const data = useSelector(selectShoppingList);
 
   const navigation = useNavigation();
 
@@ -45,10 +49,7 @@ export const ShoppingListsPage = () => {
   const [viewNewListDialog, setViewNewListDialog] = useState(false);
   const [newListName, setNewListName] = useState("NewList");
 
-  const isLoading = false;
-  if (isLoading) {
-    return <ActivityIndicator />;
-  }
+  const isLoading = useSelector(selectShoppingListIsLoading);
 
   return (
     <Container>
@@ -107,9 +108,15 @@ export const ShoppingListsPage = () => {
         </View>
 
         <FlatList<List | null>
+          refreshControl={
+            <RefreshControl
+              refreshing={isLoading}
+              onRefresh={() => dispatch(fetchAllLists())}
+            />
+          }
           data={items}
           keyboardDismissMode={"on-drag"}
-          ListEmptyComponent={<Text>You have no lists</Text>}
+          ListEmptyComponent={isLoading ? null : <Text>You have no lists</Text>}
           columnWrapperStyle={{ marginVertical: 10 }}
           numColumns={2}
           renderItem={({ item: shoppingList, index }) => {
@@ -135,7 +142,7 @@ export const ShoppingListsPage = () => {
                 underlayColor={"#e2e2e2"}
                 style={index % 2 === 1 ? { marginLeft: 20 } : null}
                 onPress={() => {
-                  navigation.navigate("ShoppingList", {
+                  navigation.navigate("SingleListScreen", {
                     shoppingListId: shoppingList.id,
                   });
                 }}

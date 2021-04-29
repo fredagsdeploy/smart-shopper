@@ -5,6 +5,6 @@ export type RootStackParamList = {
 };
 
 export type StackParamList = {
-  ShoppingList: { shoppingListId: string };
-  ShoppingLists: undefined;
+  SingleListScreen: { shoppingListId: string };
+  AllListsScreen: undefined;
 };

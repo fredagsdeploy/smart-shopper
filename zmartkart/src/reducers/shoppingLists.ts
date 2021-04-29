@@ -3,7 +3,7 @@ import { RootState } from "./rootReducer";
 import { List } from "../backend";
 import { ShoppingItem } from "../types";
 import { ListId } from "../../../backend/src/types/listEvents";
-import { fetchListAndGraph } from "./thunks";
+import { fetchAllLists, fetchListAndGraph } from "./thunks";
 
 export type ShoppingLists = Record<string, ShoppingList>;
 export type ShoppingListItems = Record<ItemId, Item>;
@@ -21,20 +21,34 @@ export interface Item {
   checked: boolean;
 }
 
-export type ShoppingListState = Record<ListId, List>;
+export interface ShoppingListState {
+  lists: Record<ListId, List>;
+  loading: boolean;
+}
 
-const initialState: ShoppingListState = {};
+const initialState: ShoppingListState = { lists: {}, loading: false };
 
 const shoppingListsSlice = createSlice({
   initialState,
   reducers: {
     setShoppingLists: (state, action) => {
-      return action.payload;
+      state.lists = action.payload;
     },
   },
   extraReducers: {
     [fetchListAndGraph.fulfilled as any]: (state, action) => {
-      return action.payload.lists;
+      state.lists = action.payload.lists;
+      state.loading = false;
+    },
+    [fetchListAndGraph.pending as any]: (state, action) => {
+      state.loading = true;
+    },
+    [fetchAllLists.pending as any]: (state, action) => {
+      state.loading = true;
+    },
+    [fetchAllLists.fulfilled as any]: (state, action) => {
+      state.loading = false;
+      state.lists = action.payload;
     },
   },
   name: "shoppingLists",
@@ -43,4 +57,7 @@ const shoppingListsSlice = createSlice({
 export const setShoppingLists = shoppingListsSlice.actions.setShoppingLists;
 export const shoppingLists = shoppingListsSlice.reducer;
 
-export const selectItemList = (state: RootState) => state.shoppingLists;
+export const selectShoppingList = (state: RootState) =>
+  state.shoppingLists.lists;
+export const selectShoppingListIsLoading = (state: RootState) =>
+  state.shoppingLists.loading;

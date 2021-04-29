@@ -1,43 +1,45 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Item, selectItemList } from "./reducers/shoppingLists";
-import { ListRow } from "./ListRow";
+import { Item, selectShoppingList } from "../reducers/shoppingLists";
+import { ListRow } from "../ListRow";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
-import { useOrder } from "./customHooks/useOrder";
+import { useOrder } from "../customHooks/useOrder";
 import {
   ActivityIndicator,
   FlatList,
-  KeyboardAvoidingView, LayoutAnimation,
+  LayoutAnimation,
+  RefreshControl,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { ghostButtonTextColor } from "./constants/colors";
+import { ghostButtonTextColor } from "../constants/colors";
 import {
   addItemToList,
   checkItem,
   ListItem,
   renameItem,
   uncheckItem,
-} from "./backend";
-import { Relatables } from "./types";
-import { fetchListAndGraph } from "./reducers/thunks";
-import { AvoidKeyboard } from "./AvoidKeyboard";
+} from "../backend";
+import { Relatables } from "../types";
+import { fetchAllLists, fetchListAndGraph } from "../reducers/thunks";
+import { AvoidKeyboard } from "../AvoidKeyboard";
+import { selectItemGraphLoading } from "../reducers/itemGraph";
 
 interface Props {
   shoppingListId: string;
 }
 
-export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
+export const SingleListPage: React.FC<Props> = ({ shoppingListId }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchListAndGraph(shoppingListId));
   }, [dispatch, shoppingListId]);
 
-  const lists = useSelector(selectItemList);
+  const lists = useSelector(selectShoppingList);
 
   const list = lists?.[shoppingListId];
   const items = Object.values(list?.items ?? {});
@@ -52,12 +54,6 @@ export const SmartShoppingList: React.FC<Props> = ({ shoppingListId }) => {
     await dispatch(fetchListAndGraph(shoppingListId));
     setNewItemName("");
   };
-
-  // TODO : Fix loading state
-  const isLoading = false;
-  if (isLoading) {
-    return <ActivityIndicator />;
-  }
 
   if (!list) {
     return <Text>No such list</Text>;
@@ -121,8 +117,16 @@ const List: React.VFC<ListProps> = ({
 }) => {
   const dispatch = useDispatch();
 
+  const isLoading = useSelector(selectItemGraphLoading);
+
   return (
     <FlatList<Item>
+      refreshControl={
+        <RefreshControl
+          refreshing={isLoading}
+          onRefresh={() => dispatch(fetchListAndGraph(shoppingListId))}
+        />
+      }
       data={items}
       keyboardDismissMode={"on-drag"}
       style={{ backgroundColor: "white" }}

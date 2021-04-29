@@ -1,12 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchItemGraph, fetchLists } from "../backend";
-import {LayoutAnimation} from "react-native";
+import { LayoutAnimation } from "react-native";
 
 export const fetchListAndGraph = createAsyncThunk(
-  "lists",
+  "listsAndGraph",
   async (shoppingListId: string) => {
-    const lists = await fetchLists();
-    const res = await fetchItemGraph(shoppingListId);
+    const [lists, res] = await Promise.all([
+      fetchLists(),
+      fetchItemGraph(shoppingListId),
+    ]);
 
     if (res.success) {
       return { lists, graph: res.unwrap().value.graph };
@@ -15,3 +17,7 @@ export const fetchListAndGraph = createAsyncThunk(
     }
   }
 );
+
+export const fetchAllLists = createAsyncThunk("lists", async () => {
+  return fetchLists();
+});
