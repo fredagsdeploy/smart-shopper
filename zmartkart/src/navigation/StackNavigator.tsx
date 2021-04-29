@@ -1,12 +1,14 @@
-import { EvilIcons, FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import * as React from "react";
 import { StackParamList } from "../../route-types";
 import { AllListsScreen } from "../AllListsPage/AllListsScreen";
 import { SingleListScreen } from "../SingleListPage/SingleListScreen";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from "@react-navigation/stack";
 import { logOutAsync } from "../authUtils";
 import { Platform, StatusBar } from "react-native";
-import { TransitionPresets } from "@react-navigation/stack";
 
 const Stack = createStackNavigator<StackParamList>();
 
@@ -38,10 +40,10 @@ export const StackNavigator: React.FC<StackNavigatorProps> = ({
                   color={"white"}
                   style={{ marginRight: 20 }}
                   onPress={async () => {
-                    await logOutAsync();
                     if (Platform.OS == "web") {
                       props.navigation.navigate("/oauth2/sign_out");
                     } else {
+                      await logOutAsync();
                       onSignOut();
                     }
                   }}
