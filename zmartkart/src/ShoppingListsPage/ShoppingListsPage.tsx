@@ -6,23 +6,15 @@ import {
   ShoppingList,
 } from "../reducers/shoppingLists";
 import { take } from "lodash";
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Platform,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { backgroundColor } from "../constants/colors";
-import { createList, fetchItemGraph, fetchLists, List } from "../backend";
+import { createList, fetchLists, List } from "../backend";
 import { v4 as uuid } from "react-native-uuid";
 import Dialog from "react-native-dialog";
 import { useDispatch, useSelector } from "react-redux";
-import { setGraph } from "../reducers/itemGraph";
 
 const cutIfListNameIsTooLong = (listName: string) => {
   if (listName.length > 9) {
@@ -37,7 +29,6 @@ export const ShoppingListsPage = () => {
   useEffect(() => {
     fetchLists()
       .then((res) => {
-        console.log(res);
         dispatch(setShoppingLists(res));
       })
       .catch((err) => console.log(err));

@@ -7,7 +7,7 @@ import { useOrder } from "./customHooks/useOrder";
 import {
   ActivityIndicator,
   FlatList,
-  KeyboardAvoidingView,
+  KeyboardAvoidingView, LayoutAnimation,
   Text,
   TextInput,
   TouchableOpacity,
@@ -132,7 +132,6 @@ const List: React.VFC<ListProps> = ({
           key={item.id}
           checked={item.checked}
           onChange={async () => {
-            setCurrentItem(item.name);
             if (item.checked) {
               await uncheckItem(shoppingListId, storeId, item.name);
             } else {
@@ -140,6 +139,11 @@ const List: React.VFC<ListProps> = ({
             }
 
             await dispatch(fetchListAndGraph(shoppingListId));
+
+            LayoutAnimation.configureNext(
+              LayoutAnimation.Presets.easeInEaseOut
+            );
+            setCurrentItem(item.name);
           }}
           name={item.name}
           onNameChange={async (name: string) => {

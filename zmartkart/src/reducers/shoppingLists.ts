@@ -1,9 +1,9 @@
-import {createAction, createSlice} from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "./rootReducer";
 import { List } from "../backend";
 import { ShoppingItem } from "../types";
 import { ListId } from "../../../backend/src/types/listEvents";
-import {fetchListAndGraph} from "./thunks";
+import { fetchListAndGraph } from "./thunks";
 
 export type ShoppingLists = Record<string, ShoppingList>;
 export type ShoppingListItems = Record<ItemId, Item>;
