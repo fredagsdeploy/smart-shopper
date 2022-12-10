@@ -1,0 +1,17 @@
+
+body {
+    background: darkslategrey;
+    color: white;
+    color-scheme: dark light;
+}
+
+.user-box {
+    background: #222;
+    color: white;
+    padding: 10px;
+    margin: 10px;
+}
+
+.users-container {
+    display: flex;
+}
